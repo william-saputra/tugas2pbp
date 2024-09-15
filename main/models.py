@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class LeatherStore(models.Model):
+class Product(models.Model): #Lebih cocok namanya product, leather store utk nama project django nya (tugas2pbp)....
     name = models.CharField(max_length=70)
     price = models.IntegerField()
     description = models.TextField(max_length=2000)
