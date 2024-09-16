@@ -53,25 +53,35 @@ Langakh ini dimulai dengan membuat `forms.py` pada untuk membuat _forms_ yang bi
     1.  **Format XML**  
         Kita perlu menambahkan fungsi `show_xml` yang mengambil seluruh data dari entry `Product` menggunakan `Product.objects.all()`. Lalu kita gunakan fungsi `serializers.serialize("xml", data)` yang mengembalikan hasil dengan tipe XML. 
           
-        ```def show_xml(request):
+        ```
+        def show_xml(request):
             data = MoodEntry.objects.all()
-            return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```  
+            return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+            ```  
+            
    2.  **Format JSON**  
        Fungsi yang akan digunakan adalah `show_json` yang serupa dengan `show_xml`. Nantinya fungsi ini akan mengembalikan hasil dengan tipe JSON.  
          
-       ```def show_json(request):
+       ```
+       def show_json(request):
             data = MoodEntry.objects.all()
-            return HttpResponse(serializers.serialize("json", data), content_type="application/json")```  
+            return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+       ```
+       
   3. **XML by ID dan JSON by ID**  
-      Fungsi tambahan`show_xml_by_id` dan `show_json_by_id` digunakan untuk mengambil data `Product` menggunakan ID. Query dilakukan menggunakan `    data = MoodEntry.objects.filter(pk=id)` untuk mengambil data sesuai ID, lalu diubah menjadi format XML atau JSON sesuai yang dipanggil. Untuk memanggilnya kita bisa menambahkan ID di belakang URL.  
+      Fungsi tambahan`show_xml_by_id` dan `show_json_by_id` digunakan untuk mengambil data `Product` menggunakan ID. Query dilakukan menggunakan `data = MoodEntry.objects.filter(pk=id)` untuk mengambil data sesuai ID, lalu diubah menjadi format XML atau JSON sesuai yang dipanggil. Untuk memanggilnya kita bisa menambahkan ID di belakang URL.  
         
-      ```def show_xml_by_id(request, id):
+      ```
+      def show_xml_by_id(request, id):
             data = MoodEntry.objects.filter(pk=id)
-            return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```  
+            return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+      ```  
   
-      ```def show_json_by_id(request, id):
+      ```
+      def show_json_by_id(request, id):
             data = MoodEntry.objects.filter(pk=id)
-            return HttpResponse(serializers.serialize("json", data), content_type="application/json")```  
+            return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+      ```  
 
 
 ** Membuat routing URL untuk masing-masing views yang telah ditambahkan pada poin 2.**  
