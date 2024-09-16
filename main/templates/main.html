@@ -1,11 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+
 <h1>{{ app }}</h1>
 
 <h5>Name: </h5>
-<p>{{ name }}<p>
+<p>{{ name }}<p> 
 <h5>Class: </h5>
 <p>{{ class }}<p>
 
-<h5>Product: </h5>
+<!-- <h5>Product: </h5>
 <p>{{ product }}<p>
 
 <h5>Price: </h5>
@@ -18,4 +21,40 @@
 <p>{{ description }}<p>  
 
 <h5>User review: </h5>
-<p>{{ user_reviews }}<p>    
+<p>{{ user_reviews }}<p> -->
+    
+{% if not product_entries %}
+<p>Belum ada data product yang diinput.</p>
+{% else %}
+<table>
+    <tr>
+    <th>Product Name</th>
+    <th>Price</th>
+    <th>Description</th>
+    <th>Thickness</th>
+    <th>User Review</th>
+    <th>User Rating</th>
+    </tr>
+
+    {% comment %} Berikut cara memperlihatkan data product di bawah baris ini 
+    {% endcomment %} 
+    {% for product_entry in product_entries %}
+    <tr>
+    <td>{{product_entry.name}}</td>
+    <td>{{product_entry.price}}</td>
+    <td>{{product_entry.description}}</td>
+    <td>{{product_entry.thickness}}</td>
+    <td>{{product_entry.user_reviews}}</td>
+    <td>{{product_entry.user_ratings}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<br />
+
+<a href="{% url 'main:create_product_entry' %}">
+    <button>Add New Product Entry</button>
+</a>
+
+{% endblock content %}
