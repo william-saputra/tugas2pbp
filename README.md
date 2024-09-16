@@ -116,6 +116,7 @@ Method `is_valid()` pada form Django berfungsi untuk memvalidasi input data yang
 `csrf_token` adalah _randomized token_ yang dihasilkan Django untuk melindungi aplikasi dari serangan CSRF. Serangan ini terjadi ketika ada permintaan berbahaya ke server seperti mengubah data penting menggunakan akun pengguna yang sudah terverifikasi. Tanpa `csrf_token` pada form, aplikasi akan rentan terhadap serangan dan bisa disalahgunakan hingga skala besar seperti menggubah data transaksi dan serangan serupa. Dengan menambahkan `csrf_token` kita memastikan bahwa setiap permintaan POST berasal dari sumber yang valid.
 
 **POSTMAN**
+
 **JSON**  
 ![image](https://github.com/user-attachments/assets/2bc3c452-ec73-4a21-b39d-0be6c8eaed50)  
 
