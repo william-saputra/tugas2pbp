@@ -51,17 +51,20 @@ Langakh ini dimulai dengan membuat `forms.py` pada untuk membuat _forms_ yang bi
 
 **Tambahkan 4 fungsi views baru untuk melihat objek yang sudah ditambahkan dalam format XML, JSON, XML by ID, dan JSON by ID.**  
     1.  **Format XML**  
-        Kita perlu menambahkan fungsi `show_xml` yang mengambil seluruh data dari entry `Product` menggunakan `Product.objects.all()`. Lalu kita gunakan fungsi `serializers.serialize("xml", data)` yang mengembalikan hasil dengan tipe XML.  
+        Kita perlu menambahkan fungsi `show_xml` yang mengambil seluruh data dari entry `Product` menggunakan `Product.objects.all()`. Lalu kita gunakan fungsi `serializers.serialize("xml", data)` yang mengembalikan hasil dengan tipe XML. 
+          
         ```def show_xml(request):
             data = MoodEntry.objects.all()
             return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```  
    2.  **Format JSON**  
        Fungsi yang akan digunakan adalah `show_json` yang serupa dengan `show_xml`. Nantinya fungsi ini akan mengembalikan hasil dengan tipe JSON.  
+         
        ```def show_json(request):
             data = MoodEntry.objects.all()
             return HttpResponse(serializers.serialize("json", data), content_type="application/json")```  
   3. **XML by ID dan JSON by ID**  
-      Fungsi tambahan`show_xml_by_id` dan `show_json_by_id` digunakan untuk mengambil data `Product` menggunakan ID. Query dilakukan menggunakan `    data = MoodEntry.objects.filter(pk=id)` untuk mengambil data sesuai ID, lalu diubah menjadi format XML atau JSON sesuai yang dipanggil. Untuk memanggilnya kita bisa menambahkan ID di belakang URL.
+      Fungsi tambahan`show_xml_by_id` dan `show_json_by_id` digunakan untuk mengambil data `Product` menggunakan ID. Query dilakukan menggunakan `    data = MoodEntry.objects.filter(pk=id)` untuk mengambil data sesuai ID, lalu diubah menjadi format XML atau JSON sesuai yang dipanggil. Untuk memanggilnya kita bisa menambahkan ID di belakang URL.  
+        
       ```def show_xml_by_id(request, id):
             data = MoodEntry.objects.filter(pk=id)
             return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```  
@@ -69,4 +72,35 @@ Langakh ini dimulai dengan membuat `forms.py` pada untuk membuat _forms_ yang bi
       ```def show_json_by_id(request, id):
             data = MoodEntry.objects.filter(pk=id)
             return HttpResponse(serializers.serialize("json", data), content_type="application/json")```  
-            
+
+
+** Membuat routing URL untuk masing-masing views yang telah ditambahkan pada poin 2.**  
+URL ditambahkan pada file `urls.py` supaya fungsi - fungsi yang sudah ditambahkan pada `views.py` bisa diakses dan dimanfaatkan.
+
+```
+urlpatterns = [
+    path('', show_main, name='show_main'),
+    path('create_product_entry',create_product_entry, name='create_product_entry'),
+    path('xml/', show_xml, name='show_xml'),
+    path('json/', show_json, name='show_json'),
+    path('xml/<str:id>/', show_xml_by_id, name='show_xml_by_id'),
+    path('json/<str:id>/', show_json_by_id, name='show_json_by_id'),
+]
+```
+  
+**Bagian Pertanyaan**  
+** Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?**  
+Data delivery sangat penting dalam pengimplementasian sebuah platform karena data adalah bagian utama dari interaksi antara pengguna dengan sistem. Peran data delivery adalah memastikan agar komunikasi data antara server dan klien bisa berjalan dengan baik. Salah satu contoh dari data delivery yang baik adalah pada aplikasi web dimana klien pengguna bisa mengakses informasi, memasukkan input, hingga menerima respon secara _real time_.  
+
+**Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?**
+JSON dan XML memiliki kelebihan dan kekurangannya masing - masing . Namun JSON sering dianggap lebih baik, terutama untuk aplikasi web karena:
+  1. Sintaks yang lebih mudah: Sintaks JSON lebih sederhana dan mudah dibaca baik oleh komputer maupun manusia.
+  2. Kompatibel dengan JavaScript: JSON adalah turunan dari JavaScript sehingga mudah digunakan dalam aplikasi web tanpa memerlukan parser tambahan.
+  3. Efisiensi proses: JSON memiliki struktur dengan basis objek dan array saja sehingga memudahkan proses di berbagai bahasa pemograman.
+Dari sudu pandang XML, XMl lebih rumit karena membutuhkan banyak tag yang harus ditulis sehingga ukurannya besar dan lebih lambat dalam melakukan proses.
+
+**Jelaskan fungsi dari method `is_valid()` pada form Django dan mengapa kita membutuhkan method tersebut?**
+Method `is_valid()` pada form Django berfungsi untuk memvalidasi input data yang dilakukan oleh pengguna ke dalam form. Method ini mencegah data yang tidak valid atau rusak masuk ke dalam sistem, misalnya angka yang di luar rentang, format nama yang salah, dan lainnya.
+
+**Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?**
+`csrf_token` adalah _randomized token_ yang dihasilkan Django untuk melindungi aplikasi dari serangan CSRF. Serangan ini terjadi ketika ada permintaan berbahaya ke server seperti mengubah data penting menggunakan akun pengguna yang sudah terverifikasi. Tanpa `csrf_token` pada form, aplikasi akan rentan terhadap serangan dan bisa disalahgunakan hingga skala besar seperti menggubah data transaksi dan serangan serupa. Dengan menambahkan `csrf_token` kita memastikan bahwa setiap permintaan POST berasal dari sumber yang valid.
