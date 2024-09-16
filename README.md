@@ -47,4 +47,26 @@ Model pada Django disebut sebagai ORM (_Object Relational Mapping_) karena Djang
 **TUGAS 3**
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **Membuat input form untuk menambahkan objek model pada app sebelumnya.**  
-Langakh ini dimulai dengan membuat `forms.py` pada untuk membuat _forms_ yang bisa menerima data baru. Form menggunakan model `Product` yang mencakup field yang relevan. Setelah itu kita perbarui kode `views.py`
+Langakh ini dimulai dengan membuat `forms.py` pada untuk membuat _forms_ yang bisa menerima data baru. Form menggunakan model `Product` yang mencakup field yang relevan. Setelah itu kita perbarui kode `views.py` dengan menambahkan fungsi `product_entry`. Fungsi ini menerima data, memvalidasi input, serta menyimpan data tersebut. Setelah berhasil disimpan maka pengguna akan di _redirect_ ke halaman utama. Lalu `views.py` dan `main.html` dimodifikasi untuk menampilan semua entri produk yang sudah dibuat.  
+
+**Tambahkan 4 fungsi views baru untuk melihat objek yang sudah ditambahkan dalam format XML, JSON, XML by ID, dan JSON by ID.**  
+    1.  **Format XML**  
+        Kita perlu menambahkan fungsi `show_xml` yang mengambil seluruh data dari entry `Product` menggunakan `Product.objects.all()`. Lalu kita gunakan fungsi `serializers.serialize("xml", data)` yang mengembalikan hasil dengan tipe XML.  
+        ```def show_xml(request):
+            data = MoodEntry.objects.all()
+            return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```  
+   2.  **Format JSON**  
+       Fungsi yang akan digunakan adalah `show_json` yang serupa dengan `show_xml`. Nantinya fungsi ini akan mengembalikan hasil dengan tipe JSON.  
+       ```def show_json(request):
+            data = MoodEntry.objects.all()
+            return HttpResponse(serializers.serialize("json", data), content_type="application/json")```  
+  3. **XML by ID dan JSON by ID**  
+      Fungsi tambahan`show_xml_by_id` dan `show_json_by_id` digunakan untuk mengambil data `Product` menggunakan ID. Query dilakukan menggunakan `    data = MoodEntry.objects.filter(pk=id)` untuk mengambil data sesuai ID, lalu diubah menjadi format XML atau JSON sesuai yang dipanggil. Untuk memanggilnya kita bisa menambahkan ID di belakang URL.
+      ```def show_xml_by_id(request, id):
+            data = MoodEntry.objects.filter(pk=id)
+            return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```  
+  
+      ```def show_json_by_id(request, id):
+            data = MoodEntry.objects.filter(pk=id)
+            return HttpResponse(serializers.serialize("json", data), content_type="application/json")```  
+            
