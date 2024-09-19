@@ -4,7 +4,8 @@ Kelas : PBP F
 
 Link: https://william-matthew31-tugas2pbp.pbp.cs.ui.ac.id/
 
-
+<details>
+  <summary>Tugas 2</summary>
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **TUGAS 2**
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -42,7 +43,10 @@ Framework Django digunakan sebagai permulaan dalam pembelajaran pengembangan per
   
 **3. Mengapa model pada Django disebut sebagai ORM?**  
 Model pada Django disebut sebagai ORM (_Object Relational Mapping_) karena Django menggunakan cara ini untuk memetakan objek Python ke tabel _database_ yang bersifat _relational_. Pengembang dipermudah melalui kehadiran cara ini, karena mereka tidak perlu  untuk berurusan dengan query SQL secara manual untuk berhubungan dengan _database_. Hal ini cukup digantikan dengan menggunakan model di Python yang secara otomatis diubah menjadi operasi _database_.  
+</details>
 
+<details>
+  <summary>Tugas 3</summary>
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **TUGAS 3**
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -128,6 +132,8 @@ Method `is_valid()` pada form Django berfungsi untuk memvalidasi input data yang
 
 **XML BY ID**  
 ![image](https://github.com/user-attachments/assets/731d0ec8-eb8e-47d9-8ba4-aa9aaea85a9e)  
+
+</details>
 
 
 
