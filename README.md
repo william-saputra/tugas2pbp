@@ -4,10 +4,10 @@ Kelas : PBP F
 
 Link: https://william-matthew31-tugas2pbp.pbp.cs.ui.ac.id/
 
+<details>
+  <summary>Tugas 2</summary>
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**TUGAS 2**
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**TUGAS 2**  
 **Memuat project django baru**  
 Dalam pembuatan proyek Django baru, ada beberapa hal dasar yang harus disiapkan mulai dari penyimpanan lokal, repository pada GitHub hingga hal - hal penting seperti _virtual environment_ dan lainnya. Penyimpanan lokal berguna untuk menyimpan data secara lokal pada penyimpanan komputer, sedangkan _repository_ GitHub adalah ruang penyimpanan secara daring. Data pada penyimpanan lokal nantinya akan di _push_ ke _repository_ GitHub sehingga data bisa diakses oleh pengembang lain sekaligus bisa dilacak perubahannya. Setelah menyiapkan penyimpanan lokal dan _repository_ GitHub, saya membuat dan mengaktifkan _virtual environment_ untuk mengisolasi _package_ dan _dependencies_ dari aplikasi sehingga tidak terjadi konflik dengan versi lain yang terdapat pada komputer. Selanjutnya, saya menyiapkan dependencies yang merupakan sebuah modul untuk fungsionalitas suatu perangkat lunak. _Dependencies_ mencakup _library_, _framework_, ataupun _package_. Pada kasus ini, saya menambahkan _dependencies_ melalui _file_ yang bernama `requirements.txt` yang nantinya akan di _install_ dengan memanfaatkan _virtual environment_. Setelah semua hal sudah siap, saya membuat proyek Django dengan nama `tugas2pbp` dengan perintah `django-admin startproject tugas2pbp .` Sebelum dijalankan, proyek Django harus diatur konfigurasinya pada file `settings.py`. Bagian yang harus diubah adalah `ALLOWED_HOST`, yang merupakan daftar host yang diperbolehkan untuk mengakses aplikasi web. Setelah itu, proyek Django ini bisa di deploy.  
   
@@ -42,10 +42,12 @@ Framework Django digunakan sebagai permulaan dalam pembelajaran pengembangan per
   
 **3. Mengapa model pada Django disebut sebagai ORM?**  
 Model pada Django disebut sebagai ORM (_Object Relational Mapping_) karena Django menggunakan cara ini untuk memetakan objek Python ke tabel _database_ yang bersifat _relational_. Pengembang dipermudah melalui kehadiran cara ini, karena mereka tidak perlu  untuk berurusan dengan query SQL secara manual untuk berhubungan dengan _database_. Hal ini cukup digantikan dengan menggunakan model di Python yang secara otomatis diubah menjadi operasi _database_.  
+</details>
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**TUGAS 3**
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<details>
+  <summary>Tugas 3</summary>
+
+**TUGAS 3**  
 **Membuat input form untuk menambahkan objek model pada app sebelumnya.**  
 Langakh ini dimulai dengan membuat `forms.py` pada untuk membuat _forms_ yang bisa menerima data baru. Form menggunakan model `Product` yang mencakup field yang relevan. Setelah itu kita perbarui kode `views.py` dengan menambahkan fungsi `product_entry`. Fungsi ini menerima data, memvalidasi input, serta menyimpan data tersebut. Setelah berhasil disimpan maka pengguna akan di _redirect_ ke halaman utama. Lalu `views.py` dan `main.html` dimodifikasi untuk menampilan semua entri produk yang sudah dibuat.  
 
@@ -114,3 +116,22 @@ Method `is_valid()` pada form Django berfungsi untuk memvalidasi input data yang
 
 **Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?**
 `csrf_token` adalah _randomized token_ yang dihasilkan Django untuk melindungi aplikasi dari serangan CSRF. Serangan ini terjadi ketika ada permintaan berbahaya ke server seperti mengubah data penting menggunakan akun pengguna yang sudah terverifikasi. Tanpa `csrf_token` pada form, aplikasi akan rentan terhadap serangan dan bisa disalahgunakan hingga skala besar seperti menggubah data transaksi dan serangan serupa. Dengan menambahkan `csrf_token` kita memastikan bahwa setiap permintaan POST berasal dari sumber yang valid.
+
+**POSTMAN**
+
+**JSON**  
+![image](https://github.com/user-attachments/assets/2bc3c452-ec73-4a21-b39d-0be6c8eaed50)  
+
+**JSON BY ID**  
+![image](https://github.com/user-attachments/assets/732802a6-a0bf-423c-a32c-32454d23b9c2)  
+
+**XML**  
+![image](https://github.com/user-attachments/assets/c9cbd717-1066-4bc1-aa9e-2e2b7416964e)  
+
+**XML BY ID**  
+![image](https://github.com/user-attachments/assets/731d0ec8-eb8e-47d9-8ba4-aa9aaea85a9e)  
+
+</details>
+
+
+
