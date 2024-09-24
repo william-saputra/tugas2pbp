@@ -239,21 +239,28 @@ def logout_user(request):
 **1. Apa perbedaan antara `HttpResponseRedirect()` dan `redirect()`**  
 `HttpResponseRedirect()` adalah respons yang secara eksplisit mengarahkan ulang ke URL tertentu. URL yang diberikan harus ditentukan secara manual. Misalnya, jika kita ingin mengarahkan pengguna ke halaman tertentu harus menulis URL target secara eksplisit, seperti `/home/` atau `/login/`.  
 
-`redirect()` adalah shortcut di Django yang secara internal menggunakan `HttpResponseRedirect()`. Django akan secara otomatis menangani konversi nama view atau nama URL menjadi URL penuh di backend, sehingga penggunaan `redirect()` sangat efisien dalam pengembangan aplikasi berbasis web.
+`redirect()` adalah shortcut di Django yang secara internal menggunakan `HttpResponseRedirect()`. Django akan secara otomatis menangani konversi nama view atau nama URL menjadi URL penuh di backend, sehingga penggunaan `redirect()` sangat efisien dalam pengembangan aplikasi berbasis web.  
 
-**2. Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.**
+**2. Jelaskan cara kerja penghubungan model Product dengan User!**  
+
+Model `Product` dan `User` akan dihubungkan menggunakan `ForeignKey` agar setiap produk memiliki pemilik yang jelas. Fungsi `create_product_entry` tidak bisa menyimpan produk baru setelah validasi form, melainkan akan ditambah informasi pemiliknya yaitu user yang sedang login. Nantinya setiap produk akan memiliki kaitan terhadap pengguna yang terautentikasi saat pembuatan.  
+
+Fungsi `show_main` hanya akan menampilkan produk milik pengguna yang sedang login menggunakan filter `Product.objects.filter(user=request.user)`. Setelah perubahan dilakukan, harus dilakukan migrasi database dan jika ada error pilihlah opsi 1 untuk menetapkan `User` dengan ID 1 pada produk yang ada. Selain itu, pengaturan `DEBUG` harus diubah agar bisa aktif di mode development dan mati di mode production menggunakan variabel environment `PRODUCTION`.  
+
+**3. Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.**
 
 Authentication berfokus pada verifikasi identitas pengguna menggunakan username dan password. Authentication menggunakan fungsi `authenticate()` yang berguna untuk memvalidasi kredensial pengguna. Jika valid nantinya fungsi `login()` akan digunakan untuk membuat sesi dan menyimpan status login pengguna. Session ID kemudian disimpan di cookie untuk mengingat pengguna yang sudah login di setiap request berikutnya.  
 
 Authorization adalah tahap lanjutan dari authentication. Authorization menentukan apa yang bisa pengguna akses. Django mengelola authorization melalui decorators seperti `@login_required` yang berguna untuk memastikan pengguna hanya bisa mengakses halaman tertentu setelah login. Django juga menggunakan `permission_required` untuk membatasi akses berdasarkan batasan tertentu, seperti hanya admin yang dapat mengakses halaman tertentu.  
 
-**3. Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari _cookies_ dan apakah semua _cookies_ aman digunakan?**  
+**4. Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari _cookies_ dan apakah semua _cookies_ aman digunakan?**  
   
 Cara Django mengingat pengguna yang telah login adalah dengan session _cookies_. Session _cookies_ diciptakan Django setelah pengguna login. Isi dari session _cookies_ adalah session ID yang akan digunakan untuk mengaitkan pengguna dengan data pada server. Saat pengguna melakukan request baru, nanti Django dapat memeriksa session ID yang sudah tercipta untuk mengecek apakah sudah melakukan login atau belum.  
 
 Selain untuk mengatur dan melakukan validasi saat pengguna masuk ke sebuah halaman, _cookies_ juga memiliki banyak fungsionalitas lain. Dimulai dari menyimpan preferensi pengguna seperti bahasa default dan juga tema halaman, activity tracking untuk kepentingan analitik, hingga otentikasi untuk melakukan validasi agar pengguna yang meninggalkan halaman tidak perlu untuk melakukan login kembali.  
 
 Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _cookies_ aman digunakan. Ada beberapa _cookies_ yang tidak dienkripsi sehingga dapat dicuri oleh pihak lain menggunakan serangan man-in-the-middle. Ada juga _cookies_ yang tidak diberi atribut secure maupun tidak menggunakan `HTTPOnly` sehingga jenis-jenis _cookies_ ini sangat mudah disadap dan dapat disalahgunakan untuk mengambil sesi pengguna yang sedang aktif.
+
 </details>
 
 
