@@ -83,11 +83,11 @@ Langakh ini dimulai dengan membuat `forms.py` pada untuk membuat _forms_ yang bi
       def show_json_by_id(request, id):
             data = MoodEntry.objects.filter(pk=id)
             return HttpResponse(serializers.serialize("json", data), content_type="application/json")
-      ```  
+      ```    
 
 
-** Membuat routing URL untuk masing-masing views yang telah ditambahkan pada poin 2.**  
-URL ditambahkan pada file `urls.py` supaya fungsi - fungsi yang sudah ditambahkan pada `views.py` bisa diakses dan dimanfaatkan.
+**Membuat routing URL untuk masing-masing views yang telah ditambahkan pada poin 2.**  
+URL ditambahkan pada file `urls.py` supaya fungsi - fungsi yang sudah ditambahkan pada `views.py` bisa diakses dan dimanfaatkan.  
 
 ```
 urlpatterns = [
@@ -101,7 +101,7 @@ urlpatterns = [
 ```
   
 **Bagian Pertanyaan**  
-** Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?**  
+**Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?**  
 Data delivery sangat penting dalam pengimplementasian sebuah platform karena data adalah bagian utama dari interaksi antara pengguna dengan sistem. Peran data delivery adalah memastikan agar komunikasi data antara server dan klien bisa berjalan dengan baik. Salah satu contoh dari data delivery yang baik adalah pada aplikasi web dimana klien pengguna bisa mengakses informasi, memasukkan input, hingga menerima respon secara _real time_.  
 
 **Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?**
