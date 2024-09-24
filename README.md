@@ -150,6 +150,7 @@ Mengautentikasi pengguna sehingga mereka bisa login dan mengakses halaman. Fungs
 Fungsi `logout` bertujuan untuk menghapus sesi pengguna yang telah login sehingga mereka tidak bisa mengakses halaman yang dibatasi. Fungsi ini ditambahkan ke file `views.py` yang berada pada direktori `main`. Fungsi ini menggunakan `logout(request)` dari Django yang bisa menghapus sesi pengguna saat ini. Setelah sesi dihapus, pengguna akan diarahkan ke halaman `login` sehingga mereka harus login ulang. Tombol ini ditambahkan ke dalam template `main.html`.  
 
 **Menghubungkan model product dengan user**  
+  
 Model `Product` dan `User` dihubungkan untuk memetakan kepemilikan user atas product yang dibuatnya. Hal ini dilakukan dengan cara mengimpor model `User` pada `models.py` dilanjutkan dengan menambahkan `ForeignKey` pada model `Product`.
 
 ```
