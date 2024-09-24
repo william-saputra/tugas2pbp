@@ -133,5 +133,94 @@ Method `is_valid()` pada form Django berfungsi untuk memvalidasi input data yang
 
 </details>
 
+<details>
+  <summary>Tugas 4</summary>
+
+**Tugas 4**
+  
+**Implementasi** 
+**Mengimplementasikan fungsi registrasi, login, dan logout untuk memungkinkan pengguna untuk mengakses aplikasi sebelumnya dengan lancar.** 
+
+Implementasi fungsi `registrasi`, `login`, dan `logout` pada aplikasi Django bertujuan untuk mengatur akses pengguna ke halaman yang di-restrict, seperti halaman utama pada aplikasi. 
+
+Fungsi `register` bertujuan untuk membuat akun pengguna baru agar mereka bisa login dan mengakses halaman yang dibatasi. Fungsi ini ditambahkan pada file `views.py` pada direktori `main`. Untuk tampilan registrasi akan di-handle oleh `register.html` yang berada di direktori `main`. Fungsi ini menggunakan `UserCreationForm` dari Django yang akan menyediakan formulir pendaftaran untuk akun baru. Selanjutnya, pengguna akan mengirimkan data melalui form yang datanya akan divalidasi menggunakan `form.is_valid()`. Jika valid, nantinya akun baru akan disimpan pada `form.save()`. Setelah itu, pengguna akan mendapat pesan berhasil dan akan diarahkan kembali ke halaman `login`.
+
+Mengautentikasi pengguna sehingga mereka bisa login dan mengakses halaman. Fungsi ini ditambahkan pada file `views.py` yang berada pada direktori `main`. Tampilan fungsi ini akan di-handle oleh file `login.html` yang berada pada direktori `main`. Fungsi ini menggunakan `AuthenticationForm` dari Django. Selanjutnya, pengguna akan mengirimkan data form login yang nantinya akan divalidasi. Jika valid, artinya pengguna berhasil diidentifikasi dengan `form.get_user()`. Setelah validasi, fungsi `login(request, user)` digunakan untuk melakukan proses login, menciptakan sesi baru untuk pengguna yang berhasil login.
+
+Fungsi `logout` bertujuan untuk menghapus sesi pengguna yang telah login sehingga mereka tidak bisa mengakses halaman yang dibatasi. Fungsi ini ditambahkan ke file `views.py` yang berada pada direktori `main`. Fungsi ini menggunakan `logout(request)` dari Django yang bisa menghapus sesi pengguna saat ini. Setelah sesi dihapus, pengguna akan diarahkan ke halaman `login` sehingga mereka harus login ulang. Tombol ini ditambahkan ke dalam template `main.html`.  
+
+**Menghubungkan model product dengan user**  
+Model `Product` dan `User` dihubungkan untuk memetakan kepemilikan user atas product yang dibuatnya. Hal ini dilakukan dengan cara mengimpor model `User` pada `models.py` dilanjutkan dengan menambahkan `ForeignKey` pada model `Product`.
+
+```
+class Product(models.Model): 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+```  
+
+Kode tersebut berfungsi untuk menghubungkan satu `Product` dengan satu `User` melalui sebuah relationship.  
+
+Selanjutnya kita ubah fungsi `create_product_entry`:
+```
+def create_product_entry(request):
+    form = ProductForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        product_entry = form.save(commit=False)
+        product_entry.user = request.user
+        product_entry.save()
+        return redirect('main:show_main')
+
+    context = {'form': form}
+    return render(request, "create_product_entry.html", context)
+```
+
+Fungsi `create_product_entry` menggunakan `commit=False` untuk mencegah Django langsung menyimpan data ke database setelah form divalidasi. Ini memungkinkan kita memodifikasi objek terlebih dahulu, seperti mengisi field `user` dengan `request.user` yang sedang login. Setelah itu, objek disimpan ke database, menandakan bahwa entri product tersebut milik pengguna yang sedang terautentikasi.  
+
+
+Selanjutnya ubah value dari `product_entries` dan `context` pada `show_main` menjadi:
+```
+def show_main(request):
+    product_entries = Product.objects.filter(user=request.user)
+    context = {
+        'name': request.user.username,
+        'product_entries': product_entries
+```
+
+Kode tersebut menampilkan `Product` yang terkait dengan pengguna yang sedang login, dengan menyaring objek berdasarkan `User` yang sedang login. Selain itu, `request.user.username` digunakan untuk menampilkan username pengguna di halaman utama.  
+  
+Setelah itu lakukan migrasi. Dalam proses ini akan ada error yang muncul, pilih `1` dan ketik angka `1` lagi untuk menetapkan user dengan ID `1` pada model yang ada. Setelah itu lakukan import `os` pada `settings.py` dan ganti variabel `DEBUG` dengan kode dibawah ini:  
+```
+PRODUCTION = os.getenv("PRODUCTION", False)
+DEBUG = not PRODUCTION
+```
+
+**PERTANYAAN**  
+**1. Apa perbedaan antara `HttpResponseRedirect()` dan `redirect()`**  
+`HttpResponseRedirect()` adalah respons yang secara eksplisit mengarahkan ulang ke URL tertentu. URL yang diberikan harus ditentukan secara manual. Misalnya, jika kita ingin mengarahkan pengguna ke halaman tertentu harus menulis URL target secara eksplisit, seperti `/home/` atau `/login/`.  
+
+`redirect()` adalah shortcut di Django yang secara internal menggunakan `HttpResponseRedirect()`. Django akan secara otomatis menangani konversi nama view atau nama URL menjadi URL penuh di backend, sehingga penggunaan `redirect()` sangat efisien dalam pengembangan aplikasi berbasis web.
+
+**2. Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.**
+
+Authentication berfokus pada verifikasi identitas pengguna menggunakan username dan password. Authentication menggunakan fungsi `authenticate()` yang berguna untuk memvalidasi kredensial pengguna. Jika valid nantinya fungsi `login()` akan digunakan untuk membuat sesi dan menyimpan status login pengguna. Session ID kemudian disimpan di cookie untuk mengingat pengguna yang sudah login di setiap request berikutnya.  
+
+Authorization adalah tahap lanjutan dari authentication. Authorization menentukan apa yang bisa pengguna akses. Django mengelola authorization melalui decorators seperti `@login_required` yang berguna untuk memastikan pengguna hanya bisa mengakses halaman tertentu setelah login. Django juga menggunakan `permission_required` untuk membatasi akses berdasarkan batasan tertentu, seperti hanya admin yang dapat mengakses halaman tertentu.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+</details>
+
+
+
 
 
