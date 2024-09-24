@@ -194,6 +194,46 @@ PRODUCTION = os.getenv("PRODUCTION", False)
 DEBUG = not PRODUCTION
 ```
 
+**Menampilkan detail informasi pengguna yang sedang logged in seperti username dan menerapkan cookies seperti last login pada halaman utama aplikasi.** 
+
+Menampilkan informasi seperti last login pada halaman utama aplikasi akan menggunakan data dari _cookies_. Dengan langkah sebagai berikut:  
+
+
+1. Tambahkan Import**: Buka `views.py` di subdirektori `main`, dan tambahkan:  
+```
+import datetime
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+```
+
+2. Menambahkan _Cookie_ `last_login`: Pada fungsi `login_user`, ubah blok kode di if `form.is_valid()` menjadi:  
+```
+if form.is_valid():
+    user = form.get_user()
+    login(request, user)
+    response = HttpResponseRedirect(reverse("main:show_main"))
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+```
+
+3. Menampilkan last_login di Halaman: Di fungsi show_main, tambahkan kode berikut ke dalam variabel context:  
+```
+'last_login': request.COOKIES['last_login']
+```
+
+4. Hapus _Cookie_ Saat _Logout_: Ubah fungsi `logout_user` menjadi:
+```
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+5. Tambahkan ke `main.html`: Setelah tombol _logout_, tambahkan kode berikut untuk menampilkan informasi pada halaman utama aplikasi web:
+```
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+```
+  
 **PERTANYAAN**  
 **1. Apa perbedaan antara `HttpResponseRedirect()` dan `redirect()`**  
 `HttpResponseRedirect()` adalah respons yang secara eksplisit mengarahkan ulang ke URL tertentu. URL yang diberikan harus ditentukan secara manual. Misalnya, jika kita ingin mengarahkan pengguna ke halaman tertentu harus menulis URL target secara eksplisit, seperti `/home/` atau `/login/`.  
