@@ -206,18 +206,13 @@ Authentication berfokus pada verifikasi identitas pengguna menggunakan username 
 
 Authorization adalah tahap lanjutan dari authentication. Authorization menentukan apa yang bisa pengguna akses. Django mengelola authorization melalui decorators seperti `@login_required` yang berguna untuk memastikan pengguna hanya bisa mengakses halaman tertentu setelah login. Django juga menggunakan `permission_required` untuk membatasi akses berdasarkan batasan tertentu, seperti hanya admin yang dapat mengakses halaman tertentu.  
 
+**3. Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari _cookies_ dan apakah semua _cookies_ aman digunakan?**  
+  
+Cara Django mengingat pengguna yang telah login adalah dengan session _cookies_. Session _cookies_ diciptakan Django setelah pengguna login. Isi dari session _cookies_ adalah session ID yang akan digunakan untuk mengaitkan pengguna dengan data pada server. Saat pengguna melakukan request baru, nanti Django dapat memeriksa session ID yang sudah tercipta untuk mengecek apakah sudah melakukan login atau belum.  
 
+Selain untuk mengatur dan melakukan validasi saat pengguna masuk ke sebuah halaman, _cookies_ juga memiliki banyak fungsionalitas lain. Dimulai dari menyimpan preferensi pengguna seperti bahasa default dan juga tema halaman, activity tracking untuk kepentingan analitik, hingga otentikasi untuk melakukan validasi agar pengguna yang meninggalkan halaman tidak perlu untuk melakukan login kembali.  
 
-
-
-
-
-
-
-
-
-
-
+Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _cookies_ aman digunakan. Ada beberapa _cookies_ yang tidak dienkripsi sehingga dapat dicuri oleh pihak lain menggunakan serangan man-in-the-middle. Ada juga _cookies_ yang tidak diberi atribut secure maupun tidak menggunakan `HTTPOnly` sehingga jenis-jenis _cookies_ ini sangat mudah disadap dan dapat disalahgunakan untuk mengambil sesi pengguna yang sedang aktif.
 </details>
 
 
