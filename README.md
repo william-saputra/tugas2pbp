@@ -261,6 +261,9 @@ Selain untuk mengatur dan melakukan validasi saat pengguna masuk ke sebuah halam
 
 Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _cookies_ aman digunakan. Ada beberapa _cookies_ yang tidak dienkripsi sehingga dapat dicuri oleh pihak lain menggunakan serangan man-in-the-middle. Ada juga _cookies_ yang tidak diberi atribut secure maupun tidak menggunakan `HTTPOnly` sehingga jenis-jenis _cookies_ ini sangat mudah disadap dan dapat disalahgunakan untuk mengambil sesi pengguna yang sedang aktif.
 
+![messageImage_1727236854010](https://github.com/user-attachments/assets/1673fa4e-27d9-4535-ac77-7bf06ebe3c81)
+![messageImage_1727237066319](https://github.com/user-attachments/assets/4710cd63-83b7-4210-8682-befd6c3ff786)
+
 </details>
 
 
