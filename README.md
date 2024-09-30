@@ -340,9 +340,8 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
   ...
   ```  
 
-** Kustomisasi halaman login, register, dan tambah product semenarik mungkin.**
+**Kustomisasi halaman login, register, dan tambah product semenarik mungkin.**
 
-**Login**  
 <details>
 <summary>Kode Login</summary>
 
@@ -430,8 +429,6 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
   {% endblock content %}
   ```
 </details>
-
-**Register**  
 <details>
   <summary>Kode Register</summary>  
   
@@ -523,8 +520,6 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
     {% endblock content %}
   ```
 </details>
-
-**Tambah Product**  
 <details>
   <summary>Kode Tambah Product</summary>  
   
@@ -588,6 +583,185 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
   ```
 
 </details>
+
+**Kustomisasi halaman daftar product menjadi lebih menarik dan responsive. Kemudian, perhatikan kondisi berikut:**  
+  1.  Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.  
+      Menambahkan kode berikut pada `main.html` untuk menampilkan gambar dan pesan bahwa belum ada product yang terdaftar  
+      
+  ```python 
+    <!-- Product Entries Section -->
+    {% if not product_entries %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+      <img src="{% static 'image/empty.png' %}" alt="Empty product" class="w-32 h-32 mb-4"/>
+      <p class="text-center text-gray-200 mt-4">Belum ada data produk pada toko.</p>
+    </div>
+    {% else %}
+    <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
+      {% for product_entry in product_entries %}
+        {% include 'card_product.html' with product_entry=product_entry %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  ```
+
+2. Jika sudah ada product yang tersimpan, halaman daftar product akan menampilkan detail setiap product dengan menggunakan card (tidak boleh sama persis dengan desain pada Tutorial!)  
+   Berikut adalah kode `card_product.html`
+   ```python 
+        {% load humanize %}
+        <div class="relative break-inside-avoid">
+            <div class="relative bg-[#2d46a2] shadow-md rounded-lg mb-6 break-inside-avoid flex flex-col border-2 border-indigo-300 transform scale-100 hover:scale-105 transition-transform duration-300">
+              
+              <!-- Header Section -->
+              <div class="bg-[#fef582] text-black-800 p-4 rounded-t-lg border-b-2 border-indigo-300">
+                <h3 class="font-bold text-xl mb-2">{{ product_entry.product_name }}</h3>
+                <p class="font-bold text-green-600">Rp {{ product_entry.price|intcomma }}</p>
+              </div>
+              
+              <!-- Content Section -->
+              <div class="p-4">
+                
+                <!-- Description Title -->
+                <p class="font-semibold text-lg mb-2 text-[#fef582]">Description</p>
+                <!-- Description Content -->
+                <p class="text-white mb-2">
+                  {{ product_entry.description }}
+                </p>
+                
+                <!-- Thickness Title -->
+                <p class="font-semibold text-lg mb-2 text-[#fef582]">Thickness</p>
+                <!-- Thickness Content -->
+                <p class="text-white mb-2">
+                  {{ product_entry.thickness }} mm
+                </p>
+        
+                <!-- User Rating and Review -->
+                <div class="mt-4 text-center">
+                  
+                  <!-- User Review Title -->
+                  <p class="font-semibold mb-2 text-[#fef582]">User Review</p>
+                  <!-- User Review Content -->
+                  <p class="italic text-white">"{{ product_entry.user_reviews }}"</p>
+                  
+                  <!-- Display Star Rating -->
+                  <div class="flex justify-center items-center mt-2">
+                    {% for i in "12345" %}
+                      {% if forloop.counter <= product_entry.user_ratings %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927a1 1 0 011.902 0l1.454 4.473a1 1 0 00.95.69h4.702c.97 0 1.371 1.24.588 1.81l-3.808 2.718a1 1 0 00-.364 1.118l1.454 4.473c.296.911-.755 1.668-1.539 1.118L10 14.347l-3.808 2.718c-.784.55-1.835-.207-1.539-1.118l1.454-4.473a1 1 0 00-.364-1.118L2.935 9.9c-.784-.57-.382-1.81.588-1.81h4.702a1 1 0 00.95-.69l1.454-4.473z" />
+                        </svg>
+                      {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927a1 1 0 011.902 0l1.454 4.473a1 1 0 00.95.69h4.702c.97 0 1.371 1.24.588 1.81l-3.808 2.718a1 1 0 00-.364 1.118l1.454 4.473c.296.911-.755 1.668-1.539 1.118L10 14.347l-3.808 2.718c-.784.55-1.835-.207-1.539-1.118l1.454-4.473a1 1 0 00-.364-1.118L2.935 9.9c-.784-.57-.382-1.81.588-1.81h4.702a1 1 0 00.95-.69l1.454-4.473z" />
+                        </svg>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Edit and Delete Buttons -->
+              <div class="absolute top-2 right-2 flex space-x-1">
+                <a href="{% url 'main:edit_product' product_entry.pk %}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                </a>
+                <a href="{% url 'main:delete_product' product_entry.pk %}" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+        </div>
+   ```  
+
+**Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut!**  
+Menambahkan kode berikut pada `card_product.html`  untuk membuat tombol _edit_ dan _delete_  
+```python
+<!-- Edit and Delete Buttons -->
+      <div class="absolute top-2 right-2 flex space-x-1">
+        <a href="{% url 'main:edit_product' product_entry.pk %}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+          </svg>
+        </a>
+        <a href="{% url 'main:delete_product' product_entry.pk %}" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+    </div>
+```  
+
+**Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.**
+_Navigation bar_ yang responsive terhadap perbedaan ukuran device bisa diimplementasikan karena pemanfaattan **Tailwind CSS**. Atribut seperti `hidden md:flex` dan juga `md:  hidden` mengatur agar _navigation bar_ yang memiliki konten _Home_, Products, _Categories_, dan _Cart_ bisa menampilkan seluruh aspek tersebut pada layar yang lebar dan bisa menampilkan logo hamburger pada layar kecil dan jika di klik akan menjabarkan seluruh isi konten tersebut. Berikut adalah kode _navigation bar_:
+
+```python
+    <nav class="bg-[#2d46a2] shadow-lg fixed top-0 left-0 z-40 w-screen">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center">
+            <h1 class="text-2xl font-bold text-center text-white">{{app}}</h1>
+          </div>
+          <div class="hidden md:flex items-center space-x-4">
+            <!-- Navbar items for desktop -->
+            <a href="#" class="text-white hover:text-gray-200">Home</a>
+            <a href="#" class="text-white hover:text-gray-200">Products</a>
+            <a href="#" class="text-white hover:text-gray-200">Categories</a>
+            <a href="#" class="text-white hover:text-gray-200">Cart</a>
+            {% if user.is_authenticated %}
+              <span class="text-gray-300">Welcome, {{ user.username }}</span>
+              <a href="{% url 'main:logout' %}" class="text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                Logout
+              </a>
+            {% else %}
+              <a href="{% url 'main:login' %}" class="text-center bg-[#2d46a2] hover:bg-[#24378c] text-white font-bold py-2 px-4 rounded transition duration-300">
+                Login
+              </a>
+            {% endif %}
+          </div>
+          <div class="md:hidden flex items-center">
+            <button class="mobile-menu-button">
+              <svg class="w-6 h-6 text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Mobile menu -->
+      <div class="mobile-menu hidden md:hidden px-4 w-full md:max-w-full">
+        <div class="pt-2 pb-3 space-y-1 mx-auto">
+          <!-- Navbar items for mobile -->
+          <a href="#" class="block text-center text-white py-2">Home</a>
+          <a href="#" class="block text-center text-white py-2">Products</a>
+          <a href="#" class="block text-center text-white py-2">Categories</a>
+          <a href="#" class="block text-center text-white py-2">Cart</a>
+          {% if user.is_authenticated %}
+            <span class="block text-gray-300 px-3 py-2">Welcome, {{ user.username }}</span>
+            <a href="{% url 'main:logout' %}" class="block text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+              Logout
+            </a>
+          {% else %}
+            <a href="{% url 'main:login' %}" class="block text-center bg-[#2d46a2] hover:bg-[#24378c] text-white font-bold py-2 px-4 rounded transition duration-300 mb-2">
+              Login
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    
+      <script>
+        const btn = document.querySelector("button.mobile-menu-button");
+        const menu = document.querySelector(".mobile-menu");
+      
+        btn.addEventListener("click", () => {
+          menu.classList.toggle("hidden");
+        });
+      </script>
+    </nav>
+```
 
 
 
