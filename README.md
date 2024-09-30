@@ -275,161 +275,320 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
 
 **A. Edit Product**  
     1. Membuat fungsi edit_product yang menerima parameter request dan id  
-      ```
-        def edit_product(request, id):
-            product= Product.objects.get(pk = id)
-            form = ProductForm(request.POST or None, instance=product)
-            if form.is_valid() and request.method == "POST":
-                form.save()
-                return HttpResponseRedirect(reverse('main:show_main'))
-            context = {'form': form}
-            return render(request, "edit_product.html", context)  
-     ```
-    2. Melakukan import pada views.py  
-    ```
-        from django.shortcuts import .., reverse
-        from django.http import .., HttpResponseRedirect
-    ``` 
-    3. Membuat file baru (edit_product.html)  sebagai tampilan dari fitur dari edit product  
-    ```
-        {% extends 'base.html' %}
-        {% load static %}
-        {% block content %}
-        <h1>Edit Product</h1>
-        <form method="POST">
-            {% csrf_token %}
-            <table>
-                {{ form.as_table }}
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type="submit" value="Edit Product"/>
-                    </td>
-                </tr>
-            </table>
-        </form>
-        {% endblock %}
-    ```
-    4. Import fungsi edit_product pada urls.py dan menambahkan path ke urlpatterns  
+    
+  ```python  
+    def edit_product(request, id):
+        product = Product.objects.get(pk=id)
+        form = ProductForm(request.POST or None, instance=product)
+        if form.is_valid() and request.method == "POST":
+            form.save()
+            return HttpResponseRedirect(reverse('main:show_main'))
+        context = {'form': form}
+        return render(request, "edit_product.html", context)
+  ```
+          
+  2. Melakukan import pada views.py
+  ```python
+    from django.shortcuts import .., reverse
+    from django.http import .., HttpResponseRedirect
+  ```
+    
+  3. Membuat file baru (edit_product.html)  sebagai tampilan dari fitur dari edit product  
+  ```python   
+    {% extends 'base.html' %}
+    {% load static %}
+    {% block content %}
+    <h1>Edit Product</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" value="Edit Product"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+    {% endblock %}
+  ```
+
+  4. Import fungsi edit_product pada urls.py dan menambahkan path ke urlpatterns  
         from main.views import edit_product
+  ```python
+    ...
+    path('edit-product/<uuid:id>', edit_product, name='edit_product'),
+    ...
+  ```
 
-        ...
-        path('edit-product/<uuid:id>', edit_product, name='edit_product'),
-        ...
-
-**A. Delete Product**  
+**B. Delete Product**  
     1. Membuat fungsi delete_product dengan parameter request dan id pada views.py  
-    ```
-        def delete_product(request, id):
-            product= Product.objects.get(pk = id)
-        product.delete()
-    # Kembali ke halaman awal
-    return HttpResponseRedirect(reverse('main:show_main'))
-    ```  
-
-    2. Import fungsi delete_product pada urls.py dan tambahkan path url ke url patterns
-    ```
+```python
+      def delete_product(request, id):
+          product= Product.objects.get(pk = id)
+          product.delete()
+          # Kembali ke halaman awal
+          return HttpResponseRedirect(reverse('main:show_main'))
+```  
+    
+  2. Import fungsi delete_product pada urls.py dan tambahkan path url ke url patterns
         from main.views import delete_product
-    ```
+  ```python
+  ...
+  path('delete/<uuid:id>', delete_product, name='delete_product'), 
+  ...
+  ```  
 
-    ```
-    ...
-    path('delete/<uuid:id>', delete_product, name='delete_product'), 
-    ...
-    ```  
-
-**Kustomisasi halaman daftar product menjadi lebih menarik dan responsive. Kemudian, perhatikan kondisi berikut:**
+** Kustomisasi halaman login, register, dan tambah product semenarik mungkin.**
 
 **Login**  
 <details>
 <summary>Kode Login</summary>
 
-    ```
-    {% extends 'base.html' %}
-    {% load static %}  <!-- Ensure this line is present -->
+  ```python
+  {% extends 'base.html' %}
+  {% load static %}  <!-- Ensure this line is present -->
 
-    {% block meta %}
-    <title>Login</title>
-    {% endblock meta %}
+  {% block meta %}
+  <title>Login</title>
+  {% endblock meta %}
 
-    {% block content %}
-    <!-- Background Video and Overlay -->
-    <div class="relative min-h-screen overflow-hidden">
-    
-    <!-- Background Video -->
-    <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0" aria-hidden="true">
-        <source src="{% static 'video/background.mp4' %}" type="video/mp4">  <!-- This uses the static tag correctly -->
-        Your browser does not support the video tag.
-    </video>
-    
-    <!-- Grey Overlay -->
-    <div class="absolute top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50 z-10"></div>
-    
-    <!-- Main Content -->
-    <div class="relative z-20 flex items-center justify-center min-h-screen w-screen py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-        <div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-white"> <!-- changed to white -->
-            Login to your account
-            </h2>
-        </div>
-        <form class="mt-8 space-y-6" method="POST" action="">
-            {% csrf_token %}
-            <input type="hidden" name="remember" value="true">
-            <div class="rounded-md shadow-sm -space-y-px">
-            <div>
-                <label for="username" class="sr-only">Username</label>
-                <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#2d46a2] focus:border-[#2d46a2] focus:z-10 sm:text-sm" placeholder="Username">
-            </div>
-            <div>
-                <label for="password" class="sr-only">Password</label>
-                <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#2d46a2] focus:border-[#2d46a2] focus:z-10 sm:text-sm" placeholder="Password">
-            </div>
-            </div>
+  {% block content %}
+  <!-- Background Video and Overlay -->
+  <div class="relative min-h-screen overflow-hidden">
+  
+  <!-- Background Video -->
+  <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0" aria-hidden="true">
+      <source src="{% static 'video/background.mp4' %}" type="video/mp4">  <!-- This uses the static tag correctly -->
+      Your browser does not support the video tag.
+  </video>
+  
+  <!-- Grey Overlay -->
+  <div class="absolute top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50 z-10"></div>
+  
+  <!-- Main Content -->
+  <div class="relative z-20 flex items-center justify-center min-h-screen w-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-md w-full space-y-8">
+      <div>
+          <h2 class="mt-6 text-center text-3xl font-extrabold text-white"> <!-- changed to white -->
+          Login to your account
+          </h2>
+      </div>
+      <form class="mt-8 space-y-6" method="POST" action="">
+          {% csrf_token %}
+          <input type="hidden" name="remember" value="true">
+          <div class="rounded-md shadow-sm -space-y-px">
+          <div>
+              <label for="username" class="sr-only">Username</label>
+              <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#2d46a2] focus:border-[#2d46a2] focus:z-10 sm:text-sm" placeholder="Username">
+          </div>
+          <div>
+              <label for="password" class="sr-only">Password</label>
+              <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#2d46a2] focus:border-[#2d46a2] focus:z-10 sm:text-sm" placeholder="Password">
+          </div>
+          </div>
 
-            <div>
-            <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#2d46a2] hover:bg-[#24378c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2d46a2]">
-                Sign in
-            </button>
-            </div>
-        </form>
+          <div>
+          <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#2d46a2] hover:bg-[#24378c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2d46a2]">
+              Sign in
+          </button>
+          </div>
+      </form>
 
-        {% if messages %}
-        <div class="mt-4">
-            {% for message in messages %}
-            {% if message.tags == "success" %}
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ message }}</span>
-            </div>
-            {% elif message.tags == "error" %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ message }}</span>
-            </div>
-            {% else %}
-            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ message }}</span>
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
+      {% if messages %}
+      <div class="mt-4">
+          {% for message in messages %}
+          {% if message.tags == "success" %}
+          <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+              <span class="block sm:inline">{{ message }}</span>
+          </div>
+          {% elif message.tags == "error" %}
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <span class="block sm:inline">{{ message }}</span>
+          </div>
+          {% else %}
+          <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
+              <span class="block sm:inline">{{ message }}</span>
+          </div>
+          {% endif %}
+          {% endfor %}
+      </div>
+      {% endif %}
 
-        <div class="text-center mt-4">
-            <p class="text-sm text-gray-300"> <!-- changed to a lighter gray -->
-            Don't have an account yet?
-            <a href="{% url 'main:register' %}" class="font-medium text-[#4a90e2] hover:text-[#356bb0]"> <!-- changed to a more vibrant blue -->
-                Register Now
-            </a>
-            </p>
-        </div>
-        </div>
-    </div>
-    </div>
-    {% endblock content %}
-    ```
+      <div class="text-center mt-4">
+          <p class="text-sm text-gray-300"> <!-- changed to a lighter gray -->
+          Don't have an account yet?
+          <a href="{% url 'main:register' %}" class="font-medium text-[#4a90e2] hover:text-[#356bb0]"> <!-- changed to a more vibrant blue -->
+              Register Now
+          </a>
+          </p>
+      </div>
+      </div>
+  </div>
+  </div>
+  {% endblock content %}
+  ```
 </details>
 
 **Register**  
+<details>
+  <summary>Kode Register</summary>  
+  
+  ```python
+    {% extends 'base.html' %}
+    {% load static %}  <!-- Ensure this line is present -->
+    
+    {% block meta %}
+    <title>Register</title>
+    {% endblock meta %}
+    
+    {% block content %}
+    <!-- Background Video and Overlay -->
+    <div class="relative min-h-screen overflow-hidden">
+      
+      <!-- Background Video -->
+      <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0" aria-hidden="true">
+        <source src="{% static 'video/background.mp4' %}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      
+      <!-- Grey Overlay -->
+      <div class="absolute top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50 z-10"></div>
+      
+      <!-- Main Content -->
+      <div class="relative z-20 flex items-center justify-center min-h-screen w-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 form-style">
+          <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
+              Create your account
+            </h2>
+          </div>
+          <form class="mt-8 space-y-6" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="remember" value="true">
+            <div class="rounded-md shadow-sm -space-y-px">
+              {% for field in form %}
+                <div class="{% if not forloop.first %}mt-4{% endif %}">
+                  <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-white">
+                    {{ field.label }}
+                  </label>
+                  <div class="relative">
+                    {{ field }}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      {% if field.errors %}
+                        <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                      {% endif %}
+                    </div>
+                  </div>
+                  {% if field.errors %}
+                    {% for error in field.errors %}
+                      <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+    
+            <div>
+              <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#2d46a2] hover:bg-[#24378c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2d46a2]">
+                Register
+              </button>
+            </div>
+          </form>
+    
+          {% if messages %}
+          <div class="mt-4">
+            {% for message in messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <span class="block sm:inline">{{ message }}</span>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+    
+          <div class="text-center mt-4">
+            <p class="text-sm text-white">
+              Already have an account?
+              <a href="{% url 'main:login' %}" class="font-medium text-[#4a90e2] hover:text-[#24378c]">
+                Login here
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endblock content %}
+  ```
+</details>
+
+**Tambah Product**  
+<details>
+  <summary>Kode Tambah Product</summary>  
+  
+  ```python 
+    {% extends 'base.html' %}
+    {% load static %}
+    {% block meta %}
+    <title>Create Product</title>
+    {% endblock meta %}
+    
+    {% block content %}
+    {% include 'navbar.html' %}
+    
+    <!-- Background Video and Overlay -->
+    <div class="relative min-h-screen overflow-hidden">
+      
+      <!-- Background Video -->
+      <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0" aria-hidden="true">
+        <source src="{% static 'video/background.mp4' %}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      
+      <!-- Grey Overlay -->
+      <div class="absolute top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50 z-10"></div>
+      
+      <!-- Main Content -->
+      <div class="relative z-20 flex flex-col min-h-screen">
+        <div class="container mx-auto px-4 py-8 mt-16 max-w-xl">
+          <h1 class="text-3xl font-bold text-center mb-8 text-white">Create Product Entry</h1>
+        
+          <div class="bg-white shadow-md rounded-lg p-6 form-style">
+            <form method="POST" class="space-y-6">
+              {% csrf_token %}
+              {% for field in form %}
+                <div class="flex flex-col">
+                  <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-gray-700">
+                    {{ field.label }}
+                  </label>
+                  <div class="w-full">
+                    {{ field }}
+                  </div>
+                  {% if field.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+              <div class="flex justify-center mt-6">
+                <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out w-full">
+                  Create Product Entry
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endblock %}
+  ```
+
+</details>
+
 
 
 
