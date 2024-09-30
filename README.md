@@ -293,7 +293,8 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
     from django.http import .., HttpResponseRedirect
   ```
     
-  3. Membuat file baru (edit_product.html)  sebagai tampilan dari fitur dari edit product  
+  3. Membuat file baru (edit_product.html)  sebagai tampilan dari fitur dari edit product
+     
   ```python   
     {% extends 'base.html' %}
     {% load static %}
@@ -314,8 +315,10 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
     {% endblock %}
   ```
 
-  4. Import fungsi edit_product pada urls.py dan menambahkan path ke urlpatterns  
-        from main.views import edit_product
+  4. Import fungsi edit_product pada urls.py dan menambahkan path ke urlpatterns
+  ```python 
+    from main.views import edit_product
+  ```
   ```python
     ...
     path('edit-product/<uuid:id>', edit_product, name='edit_product'),
@@ -324,6 +327,7 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
 
 **B. Delete Product**  
     1. Membuat fungsi delete_product dengan parameter request dan id pada views.py  
+    
 ```python
       def delete_product(request, id):
           product= Product.objects.get(pk = id)
@@ -333,7 +337,9 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
 ```  
     
   2. Import fungsi delete_product pada urls.py dan tambahkan path url ke url patterns
-        from main.views import delete_product
+  ```python
+    from main.views import delete_product
+  ```  
   ```python
   ...
   path('delete/<uuid:id>', delete_product, name='delete_product'), 
@@ -585,8 +591,9 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
 </details>
 
 **Kustomisasi halaman daftar product menjadi lebih menarik dan responsive. Kemudian, perhatikan kondisi berikut:**  
-  1.  Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.  
-      Menambahkan kode berikut pada `main.html` untuk menampilkan gambar dan pesan bahwa belum ada product yang terdaftar  
+  1.  Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.
+
+  Menambahkan kode berikut pada `main.html` untuk menampilkan gambar dan pesan bahwa belum ada product yang terdaftar  
       
   ```python 
     <!-- Product Entries Section -->
@@ -605,7 +612,8 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
   ```
 
 2. Jika sudah ada product yang tersimpan, halaman daftar product akan menampilkan detail setiap product dengan menggunakan card (tidak boleh sama persis dengan desain pada Tutorial!)  
-   Berikut adalah kode `card_product.html`
+
+Berikut adalah kode `card_product.html`
    ```python 
         {% load humanize %}
         <div class="relative break-inside-avoid">
@@ -677,6 +685,7 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
    ```  
 
 **Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut!**  
+
 Menambahkan kode berikut pada `card_product.html`  untuk membuat tombol _edit_ dan _delete_  
 ```python
 <!-- Edit and Delete Buttons -->
@@ -695,7 +704,8 @@ Menambahkan kode berikut pada `card_product.html`  untuk membuat tombol _edit_ d
     </div>
 ```  
 
-**Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.**
+**Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.**  
+
 _Navigation bar_ yang responsive terhadap perbedaan ukuran device bisa diimplementasikan karena pemanfaattan **Tailwind CSS**. Atribut seperti `hidden md:flex` dan juga `md:  hidden` mengatur agar _navigation bar_ yang memiliki konten _Home_, Products, _Categories_, dan _Cart_ bisa menampilkan seluruh aspek tersebut pada layar yang lebar dan bisa menampilkan logo hamburger pada layar kecil dan jika di klik akan menjabarkan seluruh isi konten tersebut. Berikut adalah kode _navigation bar_:
 
 ```python
@@ -761,11 +771,113 @@ _Navigation bar_ yang responsive terhadap perbedaan ukuran device bisa diimpleme
         });
       </script>
     </nav>
+```  
+
+**PERTANYAAN**  
+**1.   Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!**  
+
+Prioritasnya adalah Inline Styles > ID Selector > Class, Attribute, dan Pseudo-class Selectors > Element Selector > Browser Default.  
+
+Inline Styles adalah gaya yang ditulis langsung pada elemen HTML menggunakan atribut `style=""`. Contohnya adalah `<h1 style="color: red;">Judul</h1>`. Prioritas inline style selalu yang tertinggi dan akan menimpa semua jenis CSS lainnya jika tidak ada penggunaan `!important`.  
+
+ID Selector adalah selector yang menggunakan atribut `id` pada elemen HTML. Contohnya adalah `#header { color: blue; }` untuk elemen `<div id="header"></div>`.  
+
+Class, Attribute, dan Pseudo-class Selectors adalah selector yang menggunakan class, atribut, atau pseudo-class seperti `:hover`, `:focus`, dan lainnnya. Class ini dapat diterapkan pada beberapa elemen sekaligus. Contoh implementasinya adalah `.main { font-size: 16px; }`, `[type="text"] { color: green; }`, `:hover { background-color: yellow; }`. 
+
+Element Selector adalah selctor yang hanya menggunakan nama elemen HTML. Contohnya adalah `h1 { color: orange; }` untuk elemen `<h1>`. 
+
+Browser default tidak memiliki gaya khusus yang diterapkan oleh pengguna. Browser akan menggunakan gaya defaultnya untuk elemen HTML, misalnya heading `<h1>` lebih besar dan tebal daripada paragraf `<p>` secara default.  
+
+**2. Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design!**  
+
+_Responsive design_ menjadi konsep yang penting dalam pengembangan aplikasi web karena secara langsung akan mempengaruhi _user experience_ pada berbagai perangkat dengan perbedaan ukuran layar. Dalam _responsive design_, elemen pada halaman web akan menyesuaikan ukuran dan tata letaknya berdasarkan ukuran layar. Hal ini memastikan agar pengguna bisa mengakses dan berinteraksi dengan aplikasi web secara nyaman. Tidak hanya berhubungan dengan _user experience_, responsive design juga berhubungan dengan beberapa aspek lainnya, salah satunya adalah dengan SEO. Search engine Google menggunakan **_mobile-first indexing_** yang berarti aplikasi web dengan desain responsif akan lebih diutamakan dalam peringkat hasil pencarian, terutama pada pencarian perangkat mobile.  
+
+**3. Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!**  
+
+Margin, border, dan padding adalah tiga elemen penting dari CSS Box Model yang digunakan untuk mengatur ruang di sekitar elemen HTML. Masing-masing memiliki fungsi yang berbeda, berikut adalah ciri - ciri dari setiap elemen dan cara implementasinya.  
+
+  A. Padding  
+Padding adalah ruang antara konten dari elemen dan batas (border) elemen tersebut. Artinya, padding membuat jarak antara isi elemen dengan tepi elemen itu sendiri. Padding termasuk bagian dari elemen yang dapat mempengaruhi ukuran elemen secara keseluruhan. Cara implementasi padding adalah dengan menggunakan properti padding seperti `padding-top`, `padding-right`, `padding-bottom`, dan `padding-left`.  
+```python
+    .example {
+      padding: 20px; /* Padding di semua sisi */
+    }
+    
+    .example2 {
+      padding: 10px 15px; /* Padding atas/bawah 10px, kiri/kanan 15px */
+    }
+    
+    .example3 {
+      padding-top: 10px;
+      padding-right: 5px;
+      padding-bottom: 15px;
+      padding-left: 5px;
+    }
+``` 
+
+  B. Border
+Border adalah garis yang membungkus elemen. Border berada di luar padding dan digunakan untuk memberikan garis pembatas di sekitar elemen. Border dapat diatur tebal, gaya (solid, dashed, dotted), dan warna. Cara implementasi border adalah dengan menggunakan properti border seperti `border-top`, `border-right`, `border-bottom`, dan `border-left`.  
+```python
+  .example {
+    border: 2px solid black; /* Border hitam 2px di semua sisi */
+  }
+  
+  .example2 {
+    border-top: 5px dashed blue; /* Border atas dengan garis putus-putus biru */
+  }
+```  
+
+  C. Margin
+Margin adalah ruang di luar border elemen. Margin menentukan jarak antara elemen dengan elemen lainnya di halaman. Margin tidak mempengaruhi ukuran elemen itu sendiri, tetapi mempengaruhi ruang di luar elemen tersebut. Cara implementasi margin adalah dengan menggunakan properti margin seperti `margin-top`, `margin-right`, `margin-bottom`, dan `margin-left`.
+```python
+    .example {
+      margin: 20px; /* Margin di semua sisi */
+    }
+    
+    .example2 {
+      margin: 10px 15px; /* Margin atas/bawah 10px, kiri/kanan 15px */
+    }
+    
+    .example3 {
+      margin-top: 10px;
+      margin-right: 5px;
+      margin-bottom: 15px;
+      margin-left: 5px;
+    }
+```  
+
+**4. Jelaskan konsep flex box dan grid layout beserta kegunaannya!** 
+ 
+Flexbox adalah model tata letak satu dimensi yang berguna untuk mengatur elemen dalam baris atau kolom secara fleksibel. Flexbox ideal untuk tata letak linear seperti navbar, form, atau grid sederhana. Contoh properti dari flexbox seperti `flex-direction`, `justify-content`, dan `align-items`.  
+
+Contoh kegunaan:  
+    a. Navbar: Menyusun navigasi secara horizontal  
+    b. Layout tombol: Mengatur tombol dalam satu baris atau kolom  
+    c. Form: Mengatur elemen input dalam form secara rapi  
+    
+Berikut adalah contoh implementasinya:  
+```python
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+```  
+
+Grid Layout adalah model tata letak dua dimensi yang memungkinkan pengaturan elemen memanfaatkan baris dan kolom. Grid cocok untuk layout yang lebih kompleks seperti dashboard atau galeri. Contoh properti dari grid seperti `grid-template-columns`, `grid-template-rows`, dan `grid-area`. Berikut adalah contoh implementasinya.   
+Contoh kegunaan:  
+  a. Dashboard: Menyusun widget atau komponen secara terstruktur  
+  b. Galeri gambar: Mengatur gambar dalam beberapa kolom dan baris  
+  c. Halaman web yang kompleks: Menyusun tata letak halaman dengan banyak elemen  
+
+Berikut adalah contoh implementasinya:  
+```python
+    .container {
+      display: grid;
+      grid-template-columns: 200px 200px;
+      grid-gap: 10px;
+    }
 ```
-
-
-
-
 </details>
 
 
