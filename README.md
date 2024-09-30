@@ -275,29 +275,23 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
 
 **A. Edit Product**  
     1. Membuat fungsi edit_product yang menerima parameter request dan id  
-
-        ```
+      ```
         def edit_product(request, id):
             product= Product.objects.get(pk = id)
             form = ProductForm(request.POST or None, instance=product)
-
             if form.is_valid() and request.method == "POST":
                 form.save()
                 return HttpResponseRedirect(reverse('main:show_main'))
-
             context = {'form': form}
-            return render(request, "edit_product.html", context)
-        ```  
-  
+            return render(request, "edit_product.html", context)  
+     ```
     2. Melakukan import pada views.py  
-
-        ```
+    ```
         from django.shortcuts import .., reverse
         from django.http import .., HttpResponseRedirect
-        ```
-
+    ``` 
     3. Membuat file baru (edit_product.html)  sebagai tampilan dari fitur dari edit product  
-        ```
+    ```
         {% extends 'base.html' %}
         {% load static %}
         {% block content %}
@@ -315,18 +309,13 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
             </table>
         </form>
         {% endblock %}
-        ```  
-
+    ```
     4. Import fungsi edit_product pada urls.py dan menambahkan path ke urlpatterns  
-        ```
         from main.views import edit_product
-        ```  
 
-        ```
         ...
         path('edit-product/<uuid:id>', edit_product, name='edit_product'),
         ...
-        ```  
 
 **A. Delete Product**  
     1. Membuat fungsi delete_product dengan parameter request dan id pada views.py  
@@ -438,7 +427,7 @@ Meskipun _cookies_ tampaknya memiliki fungsionalitas yang tinggi, tidak semua _c
     </div>
     {% endblock content %}
     ```
-    </details>
+</details>
 
 **Register**  
 
