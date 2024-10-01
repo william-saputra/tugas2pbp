@@ -28,7 +28,7 @@ def show_main(request):
         'class': 'PBP F',   
         'npm': '2306165862',
         'product_entries' : product_entries,
-        'last_login': request.COOKIES['last_login'],
+        'last_login': request.COOKIES.get('last_login', 'Not Available'),
    
     }
 

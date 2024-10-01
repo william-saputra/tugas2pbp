@@ -16,9 +16,3 @@ class Product(models.Model): #Lebih cocok namanya product, leather store utk nam
     thickness = models.DecimalField(max_digits=4, decimal_places=2)
     user_reviews = models.TextField(max_length=1000)
     user_ratings = models.IntegerField()
-
-    
-
-    # @property
-    # def is_mood_strong(self):
-    #     return self.mood_intensity > 5
