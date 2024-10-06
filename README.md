@@ -1,4 +1,6 @@
-Nama : William Matthew Saputra  
+# PBP F - 2024
+
+###Nama : William Matthew Saputra  
 NPM : 2306165862  
 Kelas : PBP F  
 
@@ -878,8 +880,517 @@ Berikut adalah contoh implementasinya:
       grid-gap: 10px;
     }
 ```
+</details>  
+
+<details>
+  <summary>Tugas 6</summary>
+
+## Implementasi
+
+#### Ubahlah kode cards data mood agar dapat mendukung AJAX GET.
+1. Mengambil Data Product dengan Fetch API  
+Fungsi `getProductEntries()` diubah untuk mendapatkan data produk menggunakan AJAX GET dari endpoint yang menampilkan produk dalam format JSON.  
+
+```javascript
+async function getProductEntries() {
+    return fetch("{% url 'main:show_json' %}") // Mengambil data produk dari endpoint JSON
+    .then((res) => res.json()) // Mengubah response ke JSON
+}
+```
+2. Membuat Fungsi untuk Melakukan render Data Produk ke dalam Card  
+Setelah mendapatkan data produk, kita perlu merender data tersebut ke dalam bentuk HTML (card). Data ini diambil dari JSON yang diterima dari server. 
+
+```javascript
+async function refreshProductEntries() {
+    // Menghapus isi kontainer card sebelum me-render ulang
+    document.getElementById("product_entry_cards").innerHTML = "";
+    document.getElementById("product_entry_cards").className = "";
+
+    const productEntries = await getProductEntries(); // Ambil data produk melalui fetch
+
+    let htmlString = "";
+    let classNameString = "";
+
+    // Jika data kosong, tampilkan pesan bahwa tidak ada produk
+    if (productEntries.length === 0) {
+        classNameString = "flex flex-col items-center justify-center min-h-[24rem] p-6";
+        htmlString = `
+            <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                <img src="{% static 'image/empty.png' %}" alt="Empty product" class="w-32 h-32 mb-4"/>
+                <p class="text-center text-gray-600 mt-4">Belum ada produk di toko.</p>
+            </div>
+        `;
+    } else {
+        // Menampilkan data produk dalam bentuk card
+        classNameString = "columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full";
+        productEntries.forEach((item) => {
+            const product_name = DOMPurify.sanitize(item.fields.product_name);  // Sanitasi input untuk keamanan XSS
+            const description = DOMPurify.sanitize(item.fields.description); // Sanitasi input
+            const user_reviews = DOMPurify.sanitize(item.fields.user_reviews);
+
+            htmlString += `
+                <div class="relative break-inside-avoid">
+                    <div class="relative bg-[#2d46a2] shadow-md rounded-lg mb-6 break-inside-avoid flex flex-col border-2 border-indigo-300 transform scale-100 hover:scale-105 transition-transform duration-300">
+                        <div class="bg-[#fef582] text-black-800 p-4 rounded-t-lg border-b-2 border-indigo-300">
+                            <h3 class="font-bold text-xl mb-2">${product_name}</h3>
+                            <p class="font-bold text-green-600">Rp ${item.fields.price.toLocaleString()}</p>
+                        </div>
+                        <div class="p-4">
+                            <p class="font-semibold text-lg mb-2 text-[#fef582]">Description</p>
+                            <p class="text-white mb-2">
+                                ${description}
+                            </p>
+                            <p class="font-semibold text-lg mb-2 text-[#fef582]">Thickness</p>
+                            <p class="text-white mb-2">
+                                ${item.fields.thickness} mm
+                            </p>
+                            <div class="mt-4 text-center">
+                                <p class="font-semibold mb-2 text-[#fef582]">User Review</p>
+                                <p class="italic text-white">"${user_reviews}"</p>
+                                <div class="flex justify-center items-center mt-2">
+                                    ${[...Array(5)].map((_, i) => i < item.fields.user_ratings
+                                      ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927a1 1 0 011.902 0l1.454 4.473a1 1 0 00.95.69h4.702c.97 0 1.371 1.24.588 1.81l-3.808 2.718a1 1 0 00-.364 1.118l1.454 4.473c.296.911-.755 1.668-1.539 1.118L10 14.347l-3.808 2.718c-.784.55-1.835-.207-1.539-1.118l1.454-4.473a1 1 0 00-.364-1.118L2.935 9.9c-.784-.57-.382-1.81.588-1.81h4.702a1 1 0 00.95-.69l1.454-4.473z"/></svg>`
+                                      : `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927a1 1 0 011.902 0l1.454 4.473a1 1 0 00.95.69h4.702c.97 0 1.371 1.24.588 1.81l-3.808 2.718a1 1 0 00-.364 1.118l1.454 4.473c.296.911-.755 1.668-1.539 1.118L10 14.347l-3.808 2.718c-.784.55-1.835-.207-1.539-1.118l1.454-4.473a1 1 0 00-.364-1.118L2.935 9.9c-.784-.57-.382-1.81.588-1.81h4.702a1 1 0 00.95-.69l1.454-4.473z"/></svg>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute top-2 right-2 flex space-x-1">
+                            <a href="/edit-product/${item.pk}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                            </a>
+                            <a href="/delete-product/${item.pk}" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Menambahkan className dan innerHTML yang baru
+    document.getElementById("product_entry_cards").className = classNameString;
+    document.getElementById("product_entry_cards").innerHTML = htmlString;
+}
+
+```
+3. Memanggil Fungsi Saat Halaman Dimuat  
+Fungsi `refreshProductEntries()` harus dipanggil setelah halaman selesai dimuat agar produk bisa langsung tampil.  
+
+```javascript
+document.addEventListener("DOMContentLoaded", function () {
+    refreshProductEntries(); // Panggil fungsi untuk menampilkan data saat halaman dimuat
+});
+
+```
+
+####  Lakukan pengambilan data mood menggunakan AJAX GET. Pastikan bahwa data yang diambil hanyalah data milik pengguna yang logged-in.
+
+1. Membuat Endpoint yang Mengambil Data Berdasarkan Pengguna yang Logged-in  
+Untuk membuat endpoint untuk mengambil data Product berdasarkan pengguna yang sedang logged-in, kita harus melakukan filter pada data Product di `views.py`  
+
+```python
+def show_xml(request):
+    data = Product.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json(request):
+    data = Product.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+```
+
+2. Menyiapkan AJAX GET untuk Mengambil Data Product  
+Snyiapkan Fetch API pada bagian frontend pada `main.html` untuk melakukan permintaan AJAX GET ke endpoint yang sudah dibuat.
+
+```javascript
+async function getProductEntries(){
+      return fetch("{% url 'main:show_json' %}").then((res) => res.json())
+  }
+
+  async function refreshProductEntries() {
+    document.getElementById("product_entry_cards").innerHTML = "";
+    document.getElementById("product_entry_cards").className = "";
+    const productEntries = await getProductEntries(); // Adjust the fetch function accordingly
+    let htmlString = "";
+    let classNameString = "";
+
+    if (productEntries.length === 0) {
+        classNameString = "flex flex-col items-center justify-center min-h-[24rem] p-6";
+        htmlString = `
+            <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                <img src="{% static 'image/sedih-banget.png' %}" alt="Sad face" class="w-32 h-32 mb-4"/>
+                <p class="text-center text-gray-600 mt-4">No product data available in the leather store.</p>
+            </div>
+        `;
+    } else {
+        classNameString = "columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full";
+        productEntries.forEach((item) => {
+          const product_name = DOMPurify.sanitize(item.fields.product_name); 
+          const description = DOMPurify.sanitize(item.fields.description);
+          const user_reviews = DOMPurify.sanitize(item.fields.user_reviews);
+
+            htmlString += `
+            <div class="relative break-inside-avoid">
+              <div class="relative bg-[#2d46a2] shadow-md rounded-lg mb-6 break-inside-avoid flex flex-col border-2 border-indigo-300 transform scale-100 hover:scale-105 transition-transform duration-300">
+                
+                <!-- Header Section -->
+                <div class="bg-[#fef582] text-black-800 p-4 rounded-t-lg border-b-2 border-indigo-300">
+                  <h3 class="font-bold text-xl mb-2">${item.fields.product_name}</h3> <!-- Display product name dynamically -->
+                  <p class="font-bold text-green-600">Rp ${item.fields.price.toLocaleString()}</p> <!-- Format price to include commas -->
+                </div>
+                
+                <!-- Content Section -->
+                <div class="p-4">
+                  
+                  <!-- Description Title -->
+                  <p class="font-semibold text-lg mb-2 text-[#fef582]">Description</p>
+                  <!-- Description Content -->
+                  <p class="text-white mb-2">
+                    ${item.fields.description}
+                  </p>
+                  
+                  <!-- Thickness Title -->
+                  <p class="font-semibold text-lg mb-2 text-[#fef582]">Thickness</p>
+                  <!-- Thickness Content -->
+                  <p class="text-white mb-2">
+                    ${item.fields.thickness} mm
+                  </p>
+
+                  <!-- User Rating and Review -->
+                  <div class="mt-4 text-center">
+                    
+                    <!-- User Review Title -->
+                    <p class="font-semibold mb-2 text-[#fef582]">User Review</p>
+                    <!-- User Review Content -->
+                    <p class="italic text-white">"${item.fields.user_reviews}"</p>
+                    
+                    <!-- Display Star Rating -->
+                    <div class="flex justify-center items-center mt-2">
+                      ${[...Array(5)].map((_, i) => i < item.fields.user_ratings
+                        ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927a1 1 0 011.902 0l1.454 4.473a1 1 0 00.95.69h4.702c.97 0 1.371 1.24.588 1.81l-3.808 2.718a1 1 0 00-.364 1.118l1.454 4.473c.296.911-.755 1.668-1.539 1.118L10 14.347l-3.808 2.718c-.784.55-1.835-.207-1.539-1.118l1.454-4.473a1 1 0 00-.364-1.118L2.935 9.9c-.784-.57-.382-1.81.588-1.81h4.702a1 1 0 00.95-.69l1.454-4.473z"/></svg>`
+                        : `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927a1 1 0 011.902 0l1.454 4.473a1 1 0 00.95.69h4.702c.97 0 1.371 1.24.588 1.81l-3.808 2.718a1 1 0 00-.364 1.118l1.454 4.473c.296.911-.755 1.668-1.539 1.118L10 14.347l-3.808 2.718c-.784.55-1.835-.207-1.539-1.118l1.454-4.473a1 1 0 00-.364-1.118L2.935 9.9c-.784-.57-.382-1.81.588-1.81h4.702a1 1 0 00.95-.69l1.454-4.473z"/></svg>`).join('')}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Edit and Delete Buttons -->
+                <div class="absolute top-2 right-2 flex space-x-1">
+                  <a href="/edit-product/${item.pk}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </a>
+                  <a href="/delete/${item.pk}" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+          </div>
+
+            `;
+        });
+    }
+    document.getElementById("product_entry_cards").className = classNameString;
+    document.getElementById("product_entry_cards").innerHTML = htmlString;
+}
+```
+####  Buatlah sebuah tombol yang membuka sebuah modal dengan form untuk menambahkan mood.
+
+1. Kode HTML Modal untuk Product Entry  
+Kode berikut adalah implementasi modal (Tailwind) pada `main.html`.
+```html
+<div id="crudModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto transition-opacity duration-300 ease-out">
+  <div id="crudModalContent" class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out">
+    <!-- Modal header -->
+    <div class="flex items-center justify-between p-4 border-b rounded-t">
+      <h3 class="text-xl font-semibold text-gray-900">
+        Add New Product Entry
+      </h3>
+      <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="closeModalBtn">
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
+    </div>
+    <!-- Modal body -->
+    <div class="px-6 py-4 space-y-6 form-style">
+      <form id="productEntryForm">
+        <div class="mb-4">
+          <label for="product_name" class="block text-sm font-medium text-gray-700">Product Name</label>
+          <input type="text" id="product_name" name="product_name" class="mt-1 block w-full border border-gray-300 rounded-md p-2 hover:border-indigo-700" placeholder="Enter your product name" required>
+        </div>
+        <div class="mb-4">
+          <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea id="description" name="description" rows="3" class="mt-1 block w-full h-52 resize-none border border-gray-300 rounded-md p-2 hover:border-indigo-700" placeholder="Describe the product" required></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="price" class="block text-sm font-medium text-gray-700">Price (in Rupiah)</label>
+          <input type="number" id="price" name="price" class="mt-1 block w-full border border-gray-300 rounded-md p-2 hover:border-indigo-700" placeholder="Enter product price" required>
+        </div>
+        <div class="mb-4">
+          <label for="thickness" class="block text-sm font-medium text-gray-700">Thickness (mm)</label>
+          <input type="number" id="thickness" name="thickness" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md p-2 hover:border-indigo-700" required>
+        </div>
+        <div class="mb-4">
+          <label for="user_reviews" class="block text-sm font-medium text-gray-700">User Reviews</label>
+          <textarea id="user_reviews" name="user_reviews" rows="3" class="mt-1 block w-full h-52 resize-none border border-gray-300 rounded-md p-2 hover:border-indigo-700" placeholder="Enter user reviews"></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="user_ratings" class="block text-sm font-medium text-gray-700">User Ratings (1-10)</label>
+          <input type="number" id="user_ratings" name="user_ratings" min="1" max="10" class="mt-1 block w-full border border-gray-300 rounded-md p-2 hover:border-indigo-700" required>
+        </div>
+      </form>
+    </div>
+    <!-- Modal footer -->
+    <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 p-6 border-t border-gray-200 rounded-b justify-center md:justify-end">
+      <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg" id="cancelButton">Cancel</button>
+      <button type="submit" id="submitProductEntry" form="productEntryForm" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">Save</button>
+    </div>
+  </div>
+</div>
+```
+
+2. JavaScript untuk Menampilkan dan Menyembunyikan Modal  
+Tailwind yang digunakan adalah _vanilla Tailwind CSS_ sehingga tidak ada _class_ modal yang built-in. karena itu perlu ditambahkan beberapa fungsi di bawah ini pada `main.html`.  
+```javascript
+<script>
+  const modal = document.getElementById('crudModal');
+  const modalContent = document.getElementById('crudModalContent');
+
+  function showModal() {
+      modal.classList.remove('hidden'); 
+      setTimeout(() => {
+        modalContent.classList.remove('opacity-0', 'scale-95');
+        modalContent.classList.add('opacity-100', 'scale-100');
+      }, 50); 
+  }
+
+  function hideModal() {
+      modalContent.classList.remove('opacity-100', 'scale-100');
+      modalContent.classList.add('opacity-0', 'scale-95');
+
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 150); 
+  }
+
+  document.getElementById("cancelButton").addEventListener("click", hideModal);
+  document.getElementById("closeModalBtn").addEventListener("click", hideModal);
+</script>
+```  
+
+3. Tombol untuk Membuka Modal  
+```hTML
+<!-- Tombol untuk membuka modal product entry dengan AJAX -->
+<button data-modal-target="crudModal" data-modal-toggle="crudModal" class="btn bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105" onclick="showModal();">
+  Add New Product by AJAX
+</button>
+
+```
+
+4. AJAX untuk Menambahkan Product Entry  
+Berikut adalah kode yang digunakan untuk mengirimkan data produk baru menggunakan AJAX setelah pengguna mengisi form di modal
+
+```javascript
+<script>
+  function addProductEntry() {
+    // Menggunakan fetch untuk mengirim data produk dengan metode POST
+    fetch("{% url 'main:add_product_entry_ajax' %}", {
+      method: "POST",
+      body: new FormData(document.querySelector('#productEntryForm')),
+    })
+    .then(response => refreshProductEntries()) // Refresh list produk setelah sukses menambahkan
+    .catch(error => console.error('Error:', error));
+
+    // Reset form dan sembunyikan modal setelah data dikirim
+    document.getElementById("productEntryForm").reset(); 
+    hideModal();
+
+    return false;
+  }
+
+  // Event listener untuk menangkap submit form dan menjalankan fungsi addProductEntry
+  document.getElementById("productEntryForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    addProductEntry();
+  });
+</script>
+```
+
+####  Buatlah fungsi view baru untuk menambahkan mood baru ke dalam basis data.
+**Buat Fungsi View untuk Menambahkan Product Baru**  
+Berikut adalah fungsi view untuk menambahkan produk baru ke dalam basis data. Fungsi ini akan memproses permintaan AJAX dan menyimpan produk yang baru ke dalam model Product.  
+
+
+```python
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+    product_name = strip_tags(request.POST.get("product_name"))
+    price = strip_tags(request.POST.get("price"))
+    description = strip_tags(request.POST.get("description"))
+    thickness = strip_tags(request.POST.get("thickness"))
+    user_reviews = strip_tags(request.POST.get("user_reviews"))
+    user_ratings = strip_tags(request.POST.get("user_ratings"))
+    user = request.user
+
+    new_product = Product(
+        product_name=product_name, price=price,
+        description=description, thickness=thickness,
+        user_reviews=user_reviews, user_ratings=user_ratings,
+        user=user
+    )
+    new_product.save()
+
+    return HttpResponse(b"CREATED", status=201)
+```
+
+#### Buatlah path /create-ajax/ yang mengarah ke fungsi view yang baru kamu buat.
+Import fungsi dan tambahkan jalur routing baru di `urls.py` untuk bisa mengakses fungsi view yang baru saja dibuat.
+```python
+from main.views import ..., add_product_entry_ajax
+
+urlpatterns = [
+  ...
+  # URL untuk menambahkan produk baru via AJAX
+  path('add-product-entry-ajax/', add_product_entry_ajax, name='add_product_entry_ajax'),
+  ...
+]
+```
+####  Hubungkan form yang telah kamu buat di dalam modal kamu ke path /create-ajax/.  
+```javascript
+document.getElementById("productEntryForm").addEventListener("submit", (e) => {
+    e.preventDefault();  // Mencegah form reload halaman
+    addProductEntry();  // Panggil fungsi AJAX
+});
+
+```
+
+####  Lakukan refresh pada halaman utama secara asinkronus untuk menampilkan daftar mood terbaru tanpa reload halaman utama secara keseluruhan.  
+
+Buat fungsi `refreshProductEntries()` untuk menampilkan produk-produk terbaru secara dinamis pada halaman utama. Fungsi ini akan dipanggil setelah data berhasil ditambahkan.
+
+```javascript
+async function refreshProductEntries() {
+    document.getElementById("product_entry_cards").innerHTML = "";
+    document.getElementById("product_entry_cards").className = "";
+    const productEntries = await getProductEntries(); // Adjust the fetch function accordingly
+    let htmlString = "";
+    let classNameString = "";
+
+    if (productEntries.length === 0) {
+        classNameString = "flex flex-col items-center justify-center min-h-[24rem] p-6";
+        htmlString = `
+            <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                <img src="{% static 'image/sedih-banget.png' %}" alt="Sad face" class="w-32 h-32 mb-4"/>
+                <p class="text-center text-gray-600 mt-4">No product data available in the leather store.</p>
+            </div>
+        `;
+    } else {
+        classNameString = "columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full";
+        productEntries.forEach((item) => {
+          const product_name = DOMPurify.sanitize(item.fields.product_name); 
+          const description = DOMPurify.sanitize(item.fields.description);
+          const user_reviews = DOMPurify.sanitize(item.fields.user_reviews);
+
+            htmlString += `
+            <div class="relative break-inside-avoid">
+              <div class="relative bg-[#2d46a2] shadow-md rounded-lg mb-6 break-inside-avoid flex flex-col border-2 border-indigo-300 transform scale-100 hover:scale-105 transition-transform duration-300">
+                
+                <!-- Header Section -->
+                <div class="bg-[#fef582] text-black-800 p-4 rounded-t-lg border-b-2 border-indigo-300">
+                  <h3 class="font-bold text-xl mb-2">${item.fields.product_name}</h3> <!-- Display product name dynamically -->
+                  <p class="font-bold text-green-600">Rp ${item.fields.price.toLocaleString()}</p> <!-- Format price to include commas -->
+                </div>
+                
+                <!-- Content Section -->
+                <div class="p-4">
+                  
+                  <!-- Description Title -->
+                  <p class="font-semibold text-lg mb-2 text-[#fef582]">Description</p>
+                  <!-- Description Content -->
+                  <p class="text-white mb-2">
+                    ${item.fields.description}
+                  </p>
+                  
+                  <!-- Thickness Title -->
+                  <p class="font-semibold text-lg mb-2 text-[#fef582]">Thickness</p>
+                  <!-- Thickness Content -->
+                  <p class="text-white mb-2">
+                    ${item.fields.thickness} mm
+                  </p>
+
+                  <!-- User Rating and Review -->
+                  <div class="mt-4 text-center">
+                    
+                    <!-- User Review Title -->
+                    <p class="font-semibold mb-2 text-[#fef582]">User Review</p>
+                    <!-- User Review Content -->
+                    <p class="italic text-white">"${item.fields.user_reviews}"</p>
+                    
+                    <!-- Display Star Rating -->
+                    <div class="flex justify-center items-center mt-2">
+                      ${[...Array(5)].map((_, i) => i < item.fields.user_ratings
+                        ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927a1 1 0 011.902 0l1.454 4.473a1 1 0 00.95.69h4.702c.97 0 1.371 1.24.588 1.81l-3.808 2.718a1 1 0 00-.364 1.118l1.454 4.473c.296.911-.755 1.668-1.539 1.118L10 14.347l-3.808 2.718c-.784.55-1.835-.207-1.539-1.118l1.454-4.473a1 1 0 00-.364-1.118L2.935 9.9c-.784-.57-.382-1.81.588-1.81h4.702a1 1 0 00.95-.69l1.454-4.473z"/></svg>`
+                        : `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927a1 1 0 011.902 0l1.454 4.473a1 1 0 00.95.69h4.702c.97 0 1.371 1.24.588 1.81l-3.808 2.718a1 1 0 00-.364 1.118l1.454 4.473c.296.911-.755 1.668-1.539 1.118L10 14.347l-3.808 2.718c-.784.55-1.835-.207-1.539-1.118l1.454-4.473a1 1 0 00-.364-1.118L2.935 9.9c-.784-.57-.382-1.81.588-1.81h4.702a1 1 0 00.95-.69l1.454-4.473z"/></svg>`).join('')}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Edit and Delete Buttons -->
+                <div class="absolute top-2 right-2 flex space-x-1">
+                  <a href="/edit-product/${item.pk}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </a>
+                  <a href="/delete/${item.pk}" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+          </div>
+
+            `;
+        });
+    }
+    document.getElementById("product_entry_cards").className = classNameString;
+    document.getElementById("product_entry_cards").innerHTML = htmlString;
+}
+
+```
+
+## Pertanyaan
+### 1. Jelaskan manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web! 
+a. **Usability: Memodifikasi Halaman Tanpa Perlu Memuat Ulang (UI Lebih Cepat)**  
+JavaScript meningkatkan _user experience_ dengan memungkinkan perubahan pada halaman secara _real-time_ tanpa harus memuat ulang seluruh halaman. Misalnya, saat  mengisi formulir, JavaScript bisa langsung menerapkan perubahan tanpa perlu memuat ulang halaman. Hal ini membuat interaksi antara pengguna dengan web menjadi lebih lancar dan mengurangi penundaan waktu akibat muat ulang.
+
+b. **Efficiency: Melakukan Perubahan Kecil dengan Cepat Tanpa Menunggu Server**   
+Dengan JavaScript, perubahan kecil bisa dilakukan langsung di browser tanpa perlu mengirim permintaan ke server. Misalnya, validasi input form, melakukan filter hasil pencarian, atau memperbarui konten secara dinamis bisa dilakukan tanpa harus menunggu respon dari server. hal ini akan mengurangi beban pada server dan jaringan, sehingga interaksi terasa lebih cepat dan responsif.  
+
+c. **Event-Driven: Merespons Tindakan Pengguna Seperti Klik dan Tekan Tombol**  
+JavaScript memungkinkan aplikasi web untuk merespons tindakan pengguna seperti klik atau hover dengan cepat. Misalnya, fitur seperti dropdown, modal popup, atau tooltip bisa muncul segera setelah pengguna melakukan aksi tertentu. Respon cepat ini membuat aplikasi terasa lebih interaktif dan menarik, sehingga dapat meningkatkan _user ecperience_.
+
+### 2. Jelaskan fungsi dari penggunaan `await` ketika kita menggunakan `fetch()`! Apa yang akan terjadi jika kita tidak menggunakan `await`?
+
+Fungsi dari penggunaan `await` ketika kita menggunakan `fetch()`adalah untuk menunggu hingga proses pemanggilan API atau permintaan jaringan selesai dan hasilnya tersedia sebelum melanjutkan eksekusi kode selanjutnya. `await` digunakan dalam konteks fungsi `async` untuk membuat kode asinkron terlihat seperti kode sinkron, sehingga lebih mudah dipahami dan ditulis.
+
+Jika `await` tidak digunakan , `fetch()` akan mengembalikan Promise yang belum selesai (_pending promise_), dan eksekusi kode akan berlanjut sebelum permintaan jaringan selesai. Artinya, kode setelah pemanggilan `fetch()` akan dieksekusi tanpa menunggu hasil `fetch()`, yang bisa menyebabkan masalah jika data yang dibutuhkan belum tersedia.
+
+### 3. Mengapa kita perlu menggunakan decorator `csrf_exempt` pada view yang akan digunakan untuk AJAX POST?  
+Decorator `@csrf_exempt` digunakan pada view yang akan menerima permintaan POST via AJAX agar Django tidak memeriksa keberadaan token CSRF (_Cross-Site Request Forgery_) pada request tersebut. Secara default, Django mengharuskan setiap permintaan POST untuk menyertakan token CSRF sebagai mekanisme keamanan untuk mencegah serangan CSRF.
+
+### 4.  Pada tutorial PBP minggu ini, pembersihan data input pengguna dilakukan di belakang (_backend_) juga. Mengapa hal tersebut tidak dilakukan di _frontend_ saja?  
+
+Pembersihan data input tidak cukup dilakukan di frontend backend tetap harus menangani validasi dan pembersihan data untuk alasan keamanan. Frontend akan berada di sisi pengguna dan bisa dimodifikasi atau dilewati, memungkinkan pengguna untuk mengirimkan data berbahaya seperti script untuk XSS atau SQL Injection. Oleh karena itu, backend mharus memastikan kembali agar data valid dan aman yang diproses.
+
 </details>
-
-
-
-

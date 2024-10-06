@@ -15,24 +15,49 @@ import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
+from django.utils.html import strip_tags
 
 # Create your views here.
 @login_required(login_url='/login')
 def show_main(request):
-    product_entries = Product.objects.filter(user=request.user)
+    # product_entries = Product.objects.filter(user=request.user) --> udah tidak digunakan krn sekarang pakai json
     context = {
         'name': request.user.username,
-        'app' : 'Leather Store',
+        'app' : 'Box Synthetic Leather',
         'name': 'William Matthew Saputra',
         'class': 'PBP F',   
         'npm': '2306165862',
-        'product_entries' : product_entries,
+        # 'product_entries' : product_entries,--> udah tidak digunakan krn sekarang pakai json
         'last_login': request.COOKIES.get('last_login', 'Not Available'),
    
     }
 
     return render(request, "main.html", context)
+
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+    product_name = strip_tags(request.POST.get("product_name"))
+    price = request.POST.get("price")
+    description = strip_tags(request.POST.get("description"))
+    thickness = request.POST.get("thickness")
+    user_reviews = strip_tags(request.POST.get("user_reviews"))
+    user_ratings = request.POST.get("user_ratings")
+    user = request.user
+
+    new_product = Product(
+        product_name=product_name, price=price,
+        description=description, thickness=thickness,
+        user_reviews=user_reviews, user_ratings=user_ratings,
+        user=user
+    )
+    new_product.save()
+
+    return HttpResponse(b"CREATED", status=201)
+
 
 def create_product_entry(request):
     form = ProductForm(request.POST or None)
@@ -48,11 +73,11 @@ def create_product_entry(request):
     return render(request, "create_product_entry.html", context)
 
 def show_xml(request):
-    data = Product.objects.all()
+    data = Product.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 
 def show_json(request):
-    data = Product.objects.all()
+    data = Product.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def show_xml_by_id(request, id):
@@ -85,7 +110,8 @@ def login_user(request):
         response = HttpResponseRedirect(reverse("main:show_main"))
         response.set_cookie('last_login', str(datetime.datetime.now()))
         return response
-
+      else:
+        messages.error(request, "Invalid username or password. Please try again.")
 
    else:
       form = AuthenticationForm(request)
