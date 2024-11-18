@@ -25,40 +25,49 @@
   <div class="relative z-20 overflow-x-hidden px-4 md:px-8 pb-8 pt-24 flex flex-col">
     
     <!-- Cards Section -->
-    <div class="p-2 mb-6 relative">
-      <div class="relative grid grid-cols-1 z-30 md:grid-cols-3 gap-8">
-        {% include "card_info.html" with title='NPM' value=npm %}
-        {% include "card_info.html" with title='Name' value=name %}
-        {% include "card_info.html" with title='Class' value=class %}
+    <!-- Main Content -->
+    <div class="flex items-center justify-center relative overflow-hidden" style="min-height: 25vh;"> 
+      
+      <!-- Cards Section -->
+      <div class="w-full max-w-2xl bg-gray-800 bg-opacity-80 p-8 rounded-lg shadow-lg space-y-6 flex flex-col justify-center">
+        <h1 class="text-4xl font-bold text-white">Quality Leather, Affordable Prices</h1>
+        <p class="mt-4 text-lg text-white max-w-4xl mx-auto">
+          Discover top-grade synthetic leather perfect for your manufacturing needs. We provide premium leather at competitive prices, ensuring you get the best value for your production. Our selection includes various types of leather suitable for a wide range of applications, from fashion to upholstery.
+        </p>
       </div>
       
       <!-- Decorative Divs (Behind Main Content) -->
-      <div class="w-full px-6 absolute top-[44px] left-0 z-5 hidden md:flex">
-        <div class="w-full min-h-4 bg-[#2d46a2]">
-        </div>
+      <!-- <div class="w-full px-6 absolute top-[24px] left-0 z-5 hidden md:flex">
+        <div class="w-full min-h-4 bg-[#2d46a2]"></div>
       </div>
-      <div class="h-full w-full py-6 absolute top-0 left-0 z-5 md:hidden flex">
-        <div class="h-full min-w-4 bg-[#2d46a2] mx-auto">
-        </div>
-      </div>
+      <div class="h-full w-full py-4 absolute top-0 left-0 z-5 md:hidden flex">
+        <div class="h-full min-w-4 bg-[#2d46a2] mx-auto"></div>
+      </div> -->
     </div>
+
+
+    
     
     <!-- Last Login Section -->
-    <div class="px-3 mb-4">
-      <div class="flex rounded-md items-center bg-[#2d46a2] py-2 px-4 w-fit">
-        <h1 class="text-white text-center">Last Login: {{last_login}}</h1>
+    <!-- Container for both Last Login and Add Product Buttons -->
+    <div class="flex justify-between items-center mb-6">
+      
+      <!-- Last Login Section -->
+      <div class="flex rounded-md items-center bg-[#2d46a2] py-2 px-4">
+        <h1 class="text-white">Last Login: {{last_login}}</h1>
+      </div>
+      
+      <!-- Add New Product Buttons -->
+      <div class="flex">
+        <a href="{% url 'main:create_product_entry' %}" class="bg-[#2d46a2] hover:bg-[#24378c] text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mx-4">
+          Add New Product Entry
+        </a>
+        <button data-modal-target="crudModal" data-modal-toggle="crudModal" class="btn bg-[#2d46a2] hover:bg-[#2d46a2] text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105" onclick="showModal();">
+          Add New Product by AJAX
+        </button>
       </div>
     </div>
-    
-    <!-- Add New Product Button -->
-    <div class="flex justify-end mb-6">
-      <a href="{% url 'main:create_product_entry' %}" class="bg-[#2d46a2] hover:bg-[#24378c] text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mx-4">
-        Add New Product Entry
-      </a>
-      <button data-modal-target="crudModal" data-modal-toggle="crudModal" class="btn bg-[#2d46a2] hover:bg-[#2d46a2] text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105" onclick="showModal();">
-        Add New Product by AJAX
-      </button>
-    </div>
+
     
     <!-- Product Entries Section -->
     <!-- {% if not product_entries %}
@@ -185,7 +194,7 @@
   async function refreshProductEntries() {
     document.getElementById("product_entry_cards").innerHTML = "";
     document.getElementById("product_entry_cards").className = "";
-    const productEntries = await getProductEntries(); // Adjust the fetch function accordingly
+    const productEntries = await getProductEntries(); 
     let htmlString = "";
     let classNameString = "";
 

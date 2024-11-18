@@ -898,7 +898,7 @@ async function getProductEntries() {
 }
 ```
 2. Membuat Fungsi untuk Melakukan render Data Produk ke dalam Card  
-Setelah mendapatkan data produk, kita perlu merender data tersebut ke dalam bentuk HTML (card). Data ini diambil dari JSON yang diterima dari server. 
+Setelah mendapatkan data produk, data tersebut perlu dirender ke dalam bentuk HTML (card). Data ini diambil dari JSON yang diterima dari server. 
 
 ```javascript
 async function refreshProductEntries() {
