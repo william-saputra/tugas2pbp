@@ -20,6 +20,12 @@ from django.views.decorators.http import require_POST
 
 from django.utils.html import strip_tags
 
+import json
+
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
+
 # Create your views here.
 @login_required(login_url='/login')
 def show_main(request):
@@ -146,3 +152,26 @@ def delete_product(request, id):
     product.delete()
     # Kembali ke halaman awal
     return HttpResponseRedirect(reverse('main:show_main'))
+
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+
+        data = json.loads(request.body)
+
+            # Buat entri baru berdasarkan data yang dikirim
+        new_product = Product.objects.create(
+            user=request.user,
+            product_name=data.get("product_name"),
+            price=float(data.get("price")),
+            description=data.get("description"),
+            thickness=float(data.get("thickness")),
+            user_reviews=data.get("user_reviews"),
+            user_ratings=float(data.get("user_ratings")),
+        )
+
+        new_product.save()
+
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
